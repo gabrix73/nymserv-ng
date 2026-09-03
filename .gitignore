@@ -1,0 +1,20 @@
+# Build output
+/bin/
+*.exe
+
+# Test and fuzz artefacts
+/testdata/fuzz/
+*.test
+*.out
+
+# Never commit key material or registry state
+*.key
+identity.key
+registry.bin
+/offline/
+/spool/
+
+# Editors
+*.swp
+*~
+.DS_Store

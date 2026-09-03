@@ -1,0 +1,39 @@
+nymserv-ng
+Copyright (C) 2026 Gab Virebent <contact@virebent.art>
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version. See LICENSE.
+
+---
+
+ATTRIBUTION
+
+This is an independent implementation, not a fork. No source code from the
+projects below has been copied into it.
+
+  YAMN -- Yet Another Mix Net
+  Copyright (C) Steve Crook
+  https://github.com/crooks/yamn
+  MIT licence
+
+  nymserv -- GnuPG-based pseudonymous email server ("Zax-style")
+  Copyright (C) 2012 Steve Crook
+  https://github.com/crooks/nymserv
+  GPL
+
+nymserv-ng interoperates with the YAMN network and follows the Zax-style
+nymserver model. It reuses the Config: header grammar, the reserved-name
+conventions and the alias-expiry concept from nymserv as an interface
+contract, so that existing clients remain usable. The implementation, the
+architecture, the cryptography and the delivery model are new.
+
+The mix network concept originates with:
+
+  D. Chaum, "Untraceable Electronic Mail, Return Addresses, and Digital
+  Pseudonyms", Communications of the ACM, 24(2), 1981.
+
+The earliest pseudonym server, penet.fi, was operated by Johan Helsingius
+until 1996. Its closure under legal pressure is the reason section 4.4 of the
+design document exists.
