@@ -13,7 +13,7 @@ nymserv-ng bridges historical remailer workflows with modern post-quantum crypto
 ### What is a Nymserver?
 
 A nymserver provides you with a persistent, two-way anonymous email address:
-* Your address: <alias>@nym.virebent.art
+* Your address: <alias>@nymserv-ng.virebent.art
 * You can send email to any clearnet email recipient in the world.
 * Anyone on the internet can send email to your alias.
 * Inbound email is encrypted to your public key and delivered back to you anonymously via the remailer mixnet (Reply-Block / YAMN).
@@ -27,12 +27,12 @@ If you use manual CLI scripts, GnuPG, and Mixmaster reply blocks, nymserv-ng wor
 
 #### How to Register an Alias (Config)
 Compose a plain text file, encrypt it with GnuPG for the nymserver public key, and send it via YAMN to:
-config@nym.virebent.art
+config@nymserv-ng.virebent.art
 
 Decrypted message format:
 ```
 Config:
-From: youralias@nym.virebent.art
+From: youralias@nymserv-ng.virebent.art
 Public-Key:
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 ... your public key here ...
@@ -53,11 +53,11 @@ Nym-Commands: +cryptrecv +acksend +sigsend
 
 #### How to Send Mail as Your Alias
 Compose your message, sign it with your private PGP key, encrypt for the nymserver key, and send via YAMN to:
-send@nym.virebent.art
+send@nymserv-ng.virebent.art
 
 Decrypted message format:
 ```
-From: youralias@nym.virebent.art
+From: youralias@nymserv-ng.virebent.art
 To: recipient@destination.org
 Subject: Hello from the mixnet
 

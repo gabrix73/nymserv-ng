@@ -14,7 +14,7 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            hostname: "nym.virebent.art".to_string(),
+            hostname: "nymserv-ng.virebent.art".to_string(),
             data_dir: PathBuf::from("/var/lib/nymserv"),
             mta_command: "/usr/sbin/sendmail -t -oi".to_string(),
             max_msg_per_day: 512,

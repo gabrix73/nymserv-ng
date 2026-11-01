@@ -9,7 +9,7 @@ services:
       - ./config/nymserv.toml:/etc/nymserv/nymserv.toml:ro
     environment:
       - RUST_LOG=info
-      - NYMSERV_HOSTNAME=nym.virebent.art
+      - NYMSERV_HOSTNAME=nymserv-ng.virebent.art
     networks:
       - mailnet
 
