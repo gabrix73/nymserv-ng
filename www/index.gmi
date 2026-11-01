@@ -97,8 +97,10 @@ ML-KEM-768 Public Key SHA256:
 
 ---
 
-### Operator & Legal
-* Host: rasmus (Hetzner, Nuremberg, DE)
-* Operator: Gab Virebent <gabriel1@virebent.art>
-* Source code: https://github.com/gabrix73/nymserv-ng
-* License: AGPL-3.0
+### Discussion & Community
+Join the discussion on Usenet newsgroups:
+=> news:alt.privacy.anon-server alt.privacy.anon-server
+=> news:alt.cypherpunks alt.cypherpunks
+
+Maintainer: Gabx
+=> https://github.com/gabrix73/nymserv-ng Source code (AGPL-3.0)
