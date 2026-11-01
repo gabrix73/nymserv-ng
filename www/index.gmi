@@ -1,0 +1,98 @@
+# nymserv-ng.virebent.art
+## Dual-Stack Pseudonymous Mail Server for the YAMN Network
+
+Welcome to nymserv-ng, an email pseudonymity service operated under the Virebent Art ethics and privacy infrastructure.
+
+nymserv-ng bridges historical remailer workflows with modern post-quantum cryptography. It accepts both legacy OpenPGP messages (100% compatible with crooks/ghionym) and Next-Generation post-quantum envelopes (ML-KEM-768 + X25519) delivered through the YAMN remailer network.
+
+=> gemini://nymserv-ng.virebent.art/ Native Gemini capsule
+=> https://nymserv-ng.virebent.art/ Plain-text Web mirror
+
+---
+
+### What is a Nymserver?
+
+A nymserver provides you with a persistent, two-way anonymous email address:
+* Your address: <alias>@nym.virebent.art
+* You can send email to any clearnet email recipient in the world.
+* Anyone on the internet can send email to your alias.
+* Inbound email is encrypted to your public key and delivered back to you anonymously via the remailer mixnet (Reply-Block / YAMN).
+* The nymserver never knows your IP address, physical location, or real email address.
+
+---
+
+### 1. Legacy Protocol (crooks/ghionym compatible)
+
+If you use manual CLI scripts, GnuPG, and Mixmaster reply blocks, nymserv-ng works right out of the box with zero changes to your existing workflow.
+
+#### How to Register an Alias (Config)
+Compose a plain text file, encrypt it with GnuPG for the nymserver public key, and send it via YAMN to:
+config@nym.virebent.art
+
+Decrypted message format:
+```
+Config:
+From: youralias@nym.virebent.art
+Public-Key:
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+... your public key here ...
+-----END PGP PUBLIC KEY BLOCK-----
+Reply-Block:
+::
+Anon-To: your_mailbox@example.org
+... Mixmaster / Remailer chain ...
+
+Nym-Commands: +cryptrecv +acksend +sigsend
+```
+
+#### Supported Account Flags
+* +cryptrecv: Encrypt incoming clearnet mail with your public key before sending to your reply block (strongly recommended).
+* +sigsend: Require a valid PGP digital signature on all outgoing messages sent through your alias.
+* +acksend: Send an encrypted receipt back to your reply block when an outgoing mail is dispatched.
+* +fixedsz: Pad messages to fixed size units to frustrate packet length analysis.
+
+#### How to Send Mail as Your Alias
+Compose your message, sign it with your private PGP key, encrypt for the nymserver key, and send via YAMN to:
+send@nym.virebent.art
+
+Decrypted message format:
+```
+From: youralias@nym.virebent.art
+To: recipient@destination.org
+Subject: Hello from the mixnet
+
+This message was dispatched through nymserv-ng.
+```
+
+---
+
+### 2. Next-Generation Protocol (Post-Quantum NG)
+
+While the legacy protocol remains fully supported, OpenPGP and static RSA/ECC keys suffer from a fundamental vulnerability: lack of Forward Secrecy and vulnerability to quantum cryptanalysis (Shor's algorithm).
+
+nymserv-ng NG solves this:
+* Hybrid Post-Quantum KEM: NIST FIPS 203 ML-KEM-768 combined with X25519.
+* Perfect Forward Secrecy (PFS): An ephemeral key is generated per message. Even if server keys are compromised years later, past traffic cannot be retroactively decrypted (Harvest Now, Decrypt Later immune).
+* Authenticated AEAD: ChaCha20-Poly1305 with zero ciphertext malleability.
+* Kernel Memory Hygiene: Master private keys are locked in physical RAM (mlock) with guard pages and memory zeroing on drop.
+
+=> /spec.txt Read the full NG wire specification
+
+---
+
+### Server Public Keys
+
+Download our official keys before encrypting your requests:
+=> /nymserver-openpgp.asc Server OpenPGP Public Key (Legacy Channel)
+=> /nymserver-pq-pubkey.bin Server ML-KEM-768 Public Key (NG Channel)
+
+Fingerprint (OpenPGP):
+`E0F3 F1E1 9E03 D1D8 A9B2 C741 82DF 4410 B1C9 33E4`
+
+---
+
+### Operator & Legal
+* Host: rasmus (Hetzner, Nuremberg, DE)
+* Operator: Gab Virebent <gabriel1@virebent.art>
+* Source code: https://github.com/gabrix73/nymserv-ng
+* License: AGPL-3.0
