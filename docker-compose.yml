@@ -1,0 +1,18 @@
+services:
+  nymserv:
+    build: .
+    container_name: nymserv-ng
+    restart: unless-stopped
+    volumes:
+      - ./data:/var/lib/nymserv/data
+      - ./keys:/var/lib/nymserv/keys
+      - ./config/nymserv.toml:/etc/nymserv/nymserv.toml:ro
+    environment:
+      - RUST_LOG=info
+      - NYMSERV_HOSTNAME=nym.virebent.art
+    networks:
+      - mailnet
+
+networks:
+  mailnet:
+    driver: bridge
