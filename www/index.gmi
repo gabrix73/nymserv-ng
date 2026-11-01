@@ -86,8 +86,14 @@ Download our official keys before encrypting your requests:
 => /nymserver-openpgp.asc Server OpenPGP Public Key (Legacy Channel)
 => /nymserver-pq-pubkey.bin Server ML-KEM-768 Public Key (NG Channel)
 
-Fingerprint (OpenPGP):
-`E0F3 F1E1 9E03 D1D8 A9B2 C741 82DF 4410 B1C9 33E4`
+OpenPGP Fingerprint:
+`C5D1 1FC6 DD91 5E45 CE82  4B6E D455 E394 E202 E5CC`
+
+OpenPGP Long Key ID:
+`D455E394E202E5CC`
+
+ML-KEM-768 Public Key SHA256:
+`12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4`
 
 ---
 

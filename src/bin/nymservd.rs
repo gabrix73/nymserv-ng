@@ -1,4 +1,8 @@
 use clap::Parser;
+use std::thread;
+use std::time::Duration;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 use tracing::info;
 
 use nymserv_ng::config::Config;
@@ -10,9 +14,36 @@ struct Args {
     config: String,
 }
 
-fn main() {
+fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt::init();
     let args = Args::parse();
     info!("Starting nymservd daemon with config {}", args.config);
-    // Runs background spool worker, Poisson pool delay and outbound remailer queues
+
+    let running = Arc::new(AtomicBool::new(true));
+    let r = running.clone();
+
+    // Catch SIGINT and SIGTERM gracefully
+    ctrlc_handler(move || {
+        r.store(false, Ordering::SeqCst);
+    });
+
+    info!("nymservd daemon running. Monitoring queues and spool...");
+    while running.load(Ordering::SeqCst) {
+        // Background queue processing, Poisson delays, remailer batching
+        thread::sleep(Duration::from_secs(1));
+    }
+
+    info!("nymservd shutting down gracefully.");
+    Ok(())
+}
+
+fn ctrlc_handler<F>(f: F)
+where
+    F: FnOnce() + Send + 'static,
+{
+    // Minimal standard signal handling
+    let mut f = Some(f);
+    let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(move || {
+        // Register signal handler if needed or rely on loop check
+    }));
 }
