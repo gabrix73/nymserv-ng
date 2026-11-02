@@ -97,6 +97,27 @@ ML-KEM-768 Public Key SHA256:
 
 ---
 
+### 3. Client Tool: pqpg (Post-Quantum Privacy Guard)
+
+For users operating on the modern post-quantum channel, we provide pqpg, a standalone cryptographic CLI utility (ML-KEM-768, X25519, ChaCha20-Poly1305, Ed25519, and terminal QR code transfer).
+
+#### Quick Download (Linux x86_64 standalone binary, 1.2 MB)
+=> /bin/pqpg-linux-amd64 Download pqpg-linux-amd64 (1.2 MB)
+=> /bin/pqpg-linux-amd64.sha256 SHA256 Checksum
+
+```
+curl -sSL https://nymserv-ng.virebent.art/bin/pqpg-linux-amd64 -o ~/bin/pqpg
+chmod +x ~/bin/pqpg
+```
+
+SHA256:
+`fc1eabc6ec800b494545f558f520ec3493741977664d960cb2e7be75ea46e415`
+
+#### Multi-Platform Releases (macOS & Windows)
+=> https://github.com/gabrix73/pqpg/releases Precompiled releases for macOS (Apple Silicon/Intel) and Windows (.exe)
+
+---
+
 ### Discussion & Community
 Join the discussion on Usenet newsgroups:
 => news:alt.privacy.anon-server alt.privacy.anon-server
