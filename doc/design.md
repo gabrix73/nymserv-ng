@@ -1,5 +1,10 @@
 # nymserv-ng — Design, Threat Model and Audit of the Proposed Go Implementation
 
+> Historical design, superseded on 26 October 2026 by the
+> [Nym Mixnet/SURB architecture decision](architecture-decision-2026-10-26-nym.md).
+> This document explains the YAMN/AAM phase and its rationale. Its protocol,
+> deployment and build-order instructions are not the current project target.
+
 Target deployment: `nym.virebent.art`
 Interoperability requirement: current YAMN network (`github.com/crooks/yamn`)
 Security tier: §2.1 baseline + §2.2 mixnet/anonymity tier
@@ -349,8 +354,9 @@ every restart. No re-registration.**
   Argon2id, or is supplied directly as 32 bytes. It is **never** written to the
   host — not in a file, not in an environment variable, not in a systemd
   credential on disk.
-- On start, `nymd` runs sealed: the ingest socket accepts and pools messages it
-  cannot yet process, and processes nothing. It unseals when you connect to
+- On start, `nymd` runs sealed: the ingest socket remains available, but its
+  delivery agent receives no acknowledgement, so Postfix retains messages in
+  its durable queue. Nothing is processed until you connect to
   `/run/nymserv/control.sock` over SSH-through-onion and provide the key.
 - `K_seal` lives in RAM in a `memguard.LockedBuffer` for the process lifetime.
   This is the one place memguard actually earns its keep — unlike the submitted
@@ -956,8 +962,9 @@ cannot read `/var/lib/nymserv/db`.
 
 Two operational consequences, both intentional:
 
-- An unattended reboot leaves the service sealed and pooling. Mail is accepted
-  and queued, nothing is delivered, nothing is lost until the pool cap is hit.
+- An unattended reboot leaves the service sealed. The LDA receives no daemon
+  acknowledgement, so Postfix retains and retries mail; nothing is delivered
+  until the operator unseals the registry.
 - If you cannot reach the host, the registry stays ciphertext. That is the
   design working, not a failure.
 
@@ -1022,7 +1029,8 @@ committing to the gateway list.
 4. `cmd/nym-lda` — the ~200 LOC stdin-to-socket agent
 5. `cmd/nymd` — ingest, dispatch, control socket
 6. `internal/pgpcompat` — §3.7, isolated, fuzzed
-7. `internal/pool` — binomial mix, dummy scheduler, bucket padding
+7. `internal/pool` - selection core implemented; wire the independent
+   scheduler, dummy construction, persistent queue and bucket padding
 8. `internal/outbound` — mail2news submission via `yamn --mail`
 9. `nymclient` — the new client (config, prekey generation, ratchet window,
    a.a.m polling over Tor)
