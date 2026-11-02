@@ -147,6 +147,31 @@ Precompiled standalone binaries for macOS (Apple Silicon M1-M4 &amp; Intel) and 
 <a href="https://github.com/gabrix73/pqpg/releases">github.com/gabrix73/pqpg/releases</a>
 </p>
 
+<h4>Step-by-Step Usage Guide</h4>
+
+<p><strong>1. Generate your post-quantum keypair:</strong></p>
+<pre>pqpg keygen -n myidentity --qr</pre>
+<p>This generates <code>myidentity.key</code> (private key, mode 0600) and <code>myidentity.pub</code> (public key), and displays an Air-Gapped QR code directly on your terminal.</p>
+
+<p><strong>2. Encrypt a file or message for a recipient:</strong></p>
+<pre>pqpg encrypt -r recipient.pub document.txt -o document.msg</pre>
+<p>Or pipe text directly from standard input:</p>
+<pre>echo "Hello from the mixnet" | pqpg encrypt -r recipient.pub -o secret.msg</pre>
+
+<p><strong>3. Decrypt an incoming message:</strong></p>
+<pre>pqpg decrypt -s myidentity.key document.msg</pre>
+
+<p><strong>4. Digitally sign and verify documents:</strong></p>
+<pre># Sign a document (creates detached 64-byte Ed25519 signature)
+pqpg sign -s myidentity.key document.pdf -o document.sig
+
+# Verify the signature against the author's public key
+pqpg verify -k author.pub -s document.sig document.pdf</pre>
+
+<p><strong>5. Air-Gapped Terminal QR Display:</strong></p>
+<pre>pqpg qr myidentity.pub</pre>
+<p>Renders any key, signature or ciphertext into a high-density UTF-8 block QR code for instant offline scanning with a smartphone or webcam.</p>
+
 <div class="footer">
   <p>Discussion &amp; Community: join us on Usenet newsgroups <strong>alt.privacy.anon-server</strong> and <strong>alt.cypherpunks</strong>.<br>
   Maintainer: <strong>Gabx</strong> &bull; Source code: <a href="https://github.com/gabrix73/nymserv-ng">github.com/gabrix73/nymserv-ng</a> &bull; AGPL-3.0</p>

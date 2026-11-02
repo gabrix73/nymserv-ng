@@ -116,6 +116,37 @@ SHA256:
 #### Multi-Platform Releases (macOS & Windows)
 => https://github.com/gabrix73/pqpg/releases Precompiled releases for macOS (Apple Silicon/Intel) and Windows (.exe)
 
+#### Step-by-Step Usage Guide
+
+1. Generate your post-quantum keypair:
+```
+pqpg keygen -n myidentity --qr
+```
+This generates myidentity.key (mode 0600) and myidentity.pub, displaying an Air-Gapped QR code directly in your terminal.
+
+2. Encrypt a file or message for a recipient:
+```
+pqpg encrypt -r recipient.pub document.txt -o document.msg
+echo "Hello from the mixnet" | pqpg encrypt -r recipient.pub -o secret.msg
+```
+
+3. Decrypt an incoming message:
+```
+pqpg decrypt -s myidentity.key document.msg
+```
+
+4. Digitally sign and verify documents:
+```
+pqpg sign -s myidentity.key document.pdf -o document.sig
+pqpg verify -k author.pub -s document.sig document.pdf
+```
+
+5. Air-Gapped Terminal QR Display:
+```
+pqpg qr myidentity.pub
+```
+Renders any key, signature or ciphertext into a high-density UTF-8 block QR code for instant offline scanning with a smartphone or webcam.
+
 ---
 
 ### Discussion & Community
