@@ -11,14 +11,15 @@ Lingua: => /keys.gmi EN (English) | IT (Italiano) | => /fr/keys.gmi FR (Françai
 ---
 
 Verifica sempre i fingerprint e gli hash crittografici prima di inviare comunicazioni cifrate o configurazioni a nymserv-ng.
+Puoi richiederle via email in qualsiasi momento scrivendo a: key@nymserv-ng.virebent.art
 
 ---
 
-### 1. Chiave Master OpenPGP (Canale Legacy)
+### 1. Chiave Master OpenPGP (Canale Legacy • GnuPG / Ghionym)
 
 Utilizzata per cifrare le richieste Config: e send: nel protocollo storico GnuPG / Ghionym.
 
-=> /nymserver-openpgp.asc Download nymserver-openpgp.asc
+=> /nymserver-openpgp.asc Download nymserver-openpgp.asc (Testo ASCII Armor)
 
 Fingerprint OpenPGP:
 C5D1 1FC6 DD91 5E45 CE82  4B6E D455 E394 E202 E5CC
@@ -31,13 +32,13 @@ User ID: nymserv-ng pseudonym server <config@nymserv-ng.virebent.art>
 
 ---
 
-### 2. Chiave Master Post-Quantum (Canale Post-Quantico)
+### 2. Chiave Master Post-Quantum (Canale Moderno • NIST FIPS 203 ML-KEM / pqpg)
 
-Utilizzata per l'incapsulamento crittografico KEM resistente ad attacchi quantistici.
+Utilizzata per l'incapsulamento crittografico resistente ai futuri computer quantistici.
 
-=> /nymserver-pq-pubkey.bin Download nymserver-pq-pubkey.bin (1184 byte)
+=> /nymserver-pq-pubkey.asc Download Chiave Testo ASCII Armor (nymserver-pq-pubkey.asc)
+=> /nymserver-pq-pubkey.bin Download Chiave Grezza Binaria (nymserver-pq-pubkey.bin - 1184 byte)
+=> /bin/pqpg-linux-amd64 Download Client Standalone pqpg
 
-SHA256 Hash della Chiave Pubblica:
-12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4
-
-Algoritmo: NIST FIPS 203 ML-KEM-768
+Formato Testo: ASCII Armor (Header: -----BEGIN PQPG PUBLIC KEY-----)
+Algoritmi Ibridi: NIST FIPS 203 ML-KEM-768 + X25519 (DH) + Ed25519 (Firme)

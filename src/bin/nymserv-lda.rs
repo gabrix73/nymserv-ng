@@ -257,23 +257,38 @@ fn handle_server_key_request(cfg: &Config, recipient: &str) -> anyhow::Result<()
         "(Server OpenPGP key not found)".to_string()
     };
 
+    let pq_pub_path = cfg.keys_dir.join("nymserver-pq-pubkey.asc");
+    let pq_armor = if pq_pub_path.exists() {
+        fs::read_to_string(&pq_pub_path)?
+    } else {
+        let alt_path = cfg.keys_dir.join("nymserver-pq.pub");
+        if alt_path.exists() {
+            fs::read_to_string(&alt_path)?
+        } else {
+            "(Server Post-Quantum key not found)".to_string()
+        }
+    };
+
     let body = format!(
         "From: nymserv-ng <key@{}>\n\
         To: {}\n\
         Subject: Public keys for {} nym server\n\n\
         Official server public keys for {}:\n\n\
-        1. OpenPGP Legacy Channel Key (RSA 4096):\n\
-        ------------------------------------------------------------------------\n\
-        {}\n\
-        ------------------------------------------------------------------------\n\n\
-        2. Post-Quantum Channel Key (NIST FIPS 203 ML-KEM-768):\n\
-        ------------------------------------------------------------------------\n\
-        Public key binary: https://{}/nymserver-pq-pubkey.bin\n\
-        SHA256: 12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4\n\
-        Client standalone: https://{}/bin/pqpg-linux-amd64\n\
-        ------------------------------------------------------------------------\n",
+        ========================================================================\n\
+        1. OpenPGP Legacy Channel Key (RSA 4096)\n\
+        ========================================================================\n\
+        {}\n\n\
+        ========================================================================\n\
+        2. Post-Quantum Channel Key (NIST FIPS 203 ML-KEM-768 / PQPG)\n\
+        ========================================================================\n\
+        {}\n\n\
+        Online Documentation and Web Interface:\n\
+          https://{}/keys.html\n\
+          gemini://{}/keys.gmi\n\n\
+        Standalone CLI client download:\n\
+          https://{}/bin/pqpg-linux-amd64\n",
         cfg.hostname, recipient, cfg.hostname, cfg.hostname,
-        pgp_armor.trim(), cfg.hostname, cfg.hostname
+        pgp_armor.trim(), pq_armor.trim(), cfg.hostname, cfg.hostname, cfg.hostname
     );
 
     send_email(&cfg.mta_command, body.as_bytes())?;
@@ -537,6 +552,20 @@ fn handle_config_message(cfg: &Config, store: &NymStore, raw_bytes: &[u8]) -> Re
         Err(e) => {
             anyhow::bail!("failed to store alias record: {}", e);
         }
+    }
+
+    let confirm_body = format!(
+        "From: config@{}\n\
+        To: {}@{}\n\
+        Subject: Your configuration request completed successfully\n\n\
+        Your configuration request completed successfully.\n\
+        Your pseudonym <{}@{}> is active and ready.\n",
+        cfg.hostname, record.alias, cfg.hostname, record.alias, cfg.hostname
+    );
+    if let Err(e) = handle_alias_inbound(cfg, store, &record, confirm_body.as_bytes()) {
+        warn!("failed to deliver config confirmation to alias '{}': {}", record.alias, e);
+    } else {
+        info!("confirmation email sent to alias '{}'", record.alias);
     }
 
     Ok(())

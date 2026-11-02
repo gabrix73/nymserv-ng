@@ -3,22 +3,23 @@
 
 Language: EN (English) | => /it/keys.gmi IT (Italiano) | => /fr/keys.gmi FR (Français)
 
-=> /index.gmi Home (Overview & Security Architecture)
+=> /index.gmi Home (Overview & Security)
 => /legacy.gmi Legacy Channel Guide (OpenPGP / GnuPG / Ghionym)
 => /postquantum.gmi Post-Quantum Channel Guide (NIST ML-KEM / pqpg)
 => /keys.gmi Server Public Keys & Fingerprints
 
 ---
 
-Always verify fingerprints and cryptographic hashes before submitting configuration requests or sending encrypted transmissions to nymserv-ng.
+Always verify cryptographic fingerprints and hashes before submitting encrypted messages or configuration requests.
+You can request these keys at any time via email by writing to: key@nymserv-ng.virebent.art
 
 ---
 
-### 1. Master OpenPGP Key (Legacy Channel)
+### 1. Master OpenPGP Key (Legacy Channel • GnuPG / Ghionym)
 
-Used to encrypt Config: requests and outbound send: dispatches under the historical GnuPG / Ghionym protocol.
+Used for encrypting Config: and send: requests using standard OpenPGP implementations.
 
-=> /nymserver-openpgp.asc Download nymserver-openpgp.asc
+=> /nymserver-openpgp.asc Download nymserver-openpgp.asc (ASCII Armor Text)
 
 OpenPGP Fingerprint:
 C5D1 1FC6 DD91 5E45 CE82  4B6E D455 E394 E202 E5CC
@@ -31,13 +32,13 @@ User ID: nymserv-ng pseudonym server <config@nymserv-ng.virebent.art>
 
 ---
 
-### 2. Master Post-Quantum Key (Post-Quantum Channel)
+### 2. Master Post-Quantum Key (Modern Channel • NIST FIPS 203 ML-KEM / pqpg)
 
-Used for post-quantum key encapsulation mechanism (KEM), immune to quantum computer cryptanalysis (Harvest Now, Decrypt Later resistant).
+Used for quantum-resistant lattice encapsulation (immune to Harvest Now, Decrypt Later attacks).
 
-=> /nymserver-pq-pubkey.bin Download nymserver-pq-pubkey.bin (1184 bytes)
+=> /nymserver-pq-pubkey.asc Download ASCII Armor Text Key (nymserver-pq-pubkey.asc)
+=> /nymserver-pq-pubkey.bin Download Raw Binary Key (nymserver-pq-pubkey.bin - 1184 bytes)
+=> /bin/pqpg-linux-amd64 Download Standalone CLI Client pqpg
 
-SHA256 Public Key Hash:
-12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4
-
-Algorithm: NIST FIPS 203 ML-KEM-768
+Text Format: ASCII Armor (Header: -----BEGIN PQPG PUBLIC KEY-----)
+Hybrid Suite: NIST FIPS 203 ML-KEM-768 + X25519 (DH) + Ed25519 (Signatures)

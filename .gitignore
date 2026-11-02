@@ -19,6 +19,8 @@ registry.bin
 *.redb
 *.bin
 *.asc
+!www/*.asc
+!www/*.bin
 
 # Editors
 *.swp

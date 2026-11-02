@@ -3,41 +3,42 @@
 
 Langue : => /keys.gmi EN (English) | => /it/keys.gmi IT (Italiano) | FR (Français)
 
-=> /fr/index.gmi Accueil (Présentation & Sécurité)
-=> /fr/legacy.gmi Guide Canal Historique (OpenPGP / GnuPG / Ghionym)
+=> /fr/index.gmi Accueil (Vue d'ensemble et Sécurité)
+=> /fr/legacy.gmi Guide Canal Classique (OpenPGP / GnuPG / Ghionym)
 => /fr/postquantum.gmi Guide Canal Post-Quantique (NIST ML-KEM / pqpg)
 => /fr/keys.gmi Clés Publiques du Serveur & Empreintes
 
 ---
 
-Vérifiez toujours les empreintes et les condensats avant de transmettre des requêtes de configuration ou du courrier chiffré à nymserv-ng.
+Vérifiez toujours les empreintes et condensats cryptographiques avant de chiffrer vos messages.
+Vous pouvez obtenir ces clés par e-mail en écrivant à : key@nymserv-ng.virebent.art
 
 ---
 
-### 1. Clé Maîtresse OpenPGP (Canal Historique)
+### 1. Clé Maître OpenPGP (Canal Classique • GnuPG / Ghionym)
 
-Utilisée pour chiffrer les requêtes Config: et les émissions send: du protocole classique GnuPG / Ghionym.
+Utilisée pour chiffrer les requêtes Config: et send: via OpenPGP classique.
 
-=> /nymserver-openpgp.asc Télécharger nymserver-openpgp.asc
+=> /nymserver-openpgp.asc Télécharger nymserver-openpgp.asc (Fichier texte ASCII Armor)
 
-Empreinte OpenPGP (Fingerprint) :
+Empreinte OpenPGP :
 C5D1 1FC6 DD91 5E45 CE82  4B6E D455 E394 E202 E5CC
 
-Identifiant Long (Key ID) :
+Identifiant Long :
 D455E394E202E5CC
 
-Algorithme : RSA 4096 bits
-Identité (UID) : nymserv-ng pseudonym server <config@nymserv-ng.virebent.art>
+Algorithme : RSA 4096-bit
+Identité : nymserv-ng pseudonym server <config@nymserv-ng.virebent.art>
 
 ---
 
-### 2. Clé Maîtresse Post-Quantique (Canal Post-Quantique)
+### 2. Clé Maître Post-Quantique (Canal Moderne • NIST FIPS 203 ML-KEM / pqpg)
 
-Utilisée pour l'encapsulation de clé KEM résistante à la cryptanalyse quantique.
+Utilisée pour l'encapsulation cryptographique post-quantique.
 
-=> /nymserver-pq-pubkey.bin Télécharger nymserver-pq-pubkey.bin (1184 octets)
+=> /nymserver-pq-pubkey.asc Télécharger la Clé Texte ASCII Armor (nymserver-pq-pubkey.asc)
+=> /nymserver-pq-pubkey.bin Télécharger la Clé Brute Binaire (nymserver-pq-pubkey.bin - 1 184 octets)
+=> /bin/pqpg-linux-amd64 Télécharger le Client Standalone pqpg
 
-Condensat SHA256 de la Clé Publique :
-12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4
-
-Algorithme : NIST FIPS 203 ML-KEM-768
+Format Texte : ASCII Armor (En-tête : -----BEGIN PQPG PUBLIC KEY-----)
+Suite Hybride : NIST FIPS 203 ML-KEM-768 + X25519 (DH) + Ed25519 (Signatures)

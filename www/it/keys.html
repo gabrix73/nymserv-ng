@@ -12,7 +12,7 @@
     font-size: 15px;
     line-height: 1.55;
     margin: 2rem auto;
-    max-width: 75ch;
+    max-width: 80ch;
     padding: 0 1rem;
   }
   h1 { font-size: 1.35rem; margin-bottom: 0.2rem; color: #ffffff; }
@@ -20,7 +20,7 @@
   .skull-icon { fill: #ffffff; vertical-align: -3px; margin-right: 0.35rem; display: inline-block; }
 
   h2 { font-size: 1.05rem; font-weight: normal; color: #a0a0a0; margin-top: 0; }
-  h3 { font-size: 1.1rem; color: #f0f0f0; margin-top: 2rem; border-bottom: 1px solid #333; padding-bottom: 0.3rem; }
+  h3 { font-size: 1.15rem; color: #f0f0f0; margin-top: 2rem; border-bottom: 1px solid #333; padding-bottom: 0.4rem; }
   a { color: #72a9ff; text-decoration: none; }
   a:hover { text-decoration: underline; }
   .lang-bar {
@@ -44,14 +44,24 @@
   .menu li { margin: 0.35rem 0; }
   .menu li::before { content: "=> "; color: #888; font-weight: bold; }
   .active-nav { color: #ffffff; font-weight: bold; }
-  code { background: #222; padding: 0.1rem 0.3rem; border-radius: 3px; }
+  pre {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    padding: 0.8rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    line-height: 1.4;
+  }
+  code { background: #222; padding: 0.1rem 0.35rem; border-radius: 3px; color: #f2c078; }
+  pre code { background: none; padding: 0; color: #e2e2e2; }
   ul { padding-left: 1.4rem; }
   li { margin-bottom: 0.35rem; }
   hr { border: 0; border-top: 1px solid #333; margin: 2rem 0; }
   .footer { color: #888; font-size: 0.85rem; margin-top: 3rem; border-top: 1px solid #2a2a2a; padding-top: 1rem; }
 </style>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
 </head>
 <body>
 
@@ -73,43 +83,78 @@
 </nav>
 
 <p>
-Verifica sempre i fingerprint e gli hash crittografici prima di cifrare qualsiasi messaggio o richiesta di registrazione diretta a nymserv-ng.
+Puoi importare le chiavi pubbliche direttamente da questa pagina, scaricarle come file di testo, oppure richiederle via email inviando un messaggio a <code>key@nymserv-ng.virebent.art</code>.
 </p>
 
 <hr>
 
-<h3>1. Chiave Master OpenPGP (Canale Legacy)</h3>
+<h3>1. Chiave Master OpenPGP (Canale Legacy &bull; GnuPG / Ghionym)</h3>
 <p>
-Utilizzata per cifrare le richieste <code>Config:</code> e <code>send:</code> nel protocollo storico GnuPG / Ghionym.
+Utilizzata per cifrare le richieste <code>Config:</code> e <code>send:</code> verso il nymserver con software OpenPGP standard.
 </p>
 <p>
-<a href="/nymserver-openpgp.asc"><strong>=&gt; Download: nymserver-openpgp.asc</strong></a>
+<a href="/nymserver-openpgp.asc"><strong>=&gt; Scarica File di Testo: nymserver-openpgp.asc</strong></a>
 </p>
 
-<p>Fingerprint OpenPGP:<br>
-<code>C5D1 1FC6 DD91 5E45 CE82  4B6E D455 E394 E202 E5CC</code></p>
-<p>Long Key ID:<br>
-<code>D455E394E202E5CC</code></p>
-<p>Algoritmo: RSA 4096-bit<br>
-User ID: <code>nymserv-ng pseudonym server &lt;config@nymserv-ng.virebent.art&gt;</code></p>
+<ul>
+  <li><strong>Fingerprint OpenPGP</strong>: <code>C5D1 1FC6 DD91 5E45 CE82  4B6E D455 E394 E202 E5CC</code></li>
+  <li><strong>Long Key ID</strong>: <code>D455E394E202E5CC</code></li>
+  <li><strong>Algoritmo</strong>: RSA 4096-bit</li>
+  <li><strong>User ID</strong>: <code>nymserv-ng pseudonym server &lt;config@nymserv-ng.virebent.art&gt;</code></li>
+</ul>
 
 <hr>
 
-<h3>2. Chiave Master Post-Quantum (Canale Moderno)</h3>
+<h3>2. Chiave Master Post-Quantica (Canale Moderno &bull; NIST FIPS 203 ML-KEM / pqpg)</h3>
 <p>
-Utilizzata per l'incapsulamento crittografico KEM resistente all'analisi quantistica (Harvest Now, Decrypt Later immune).
+Utilizzata per l'incapsulamento crittografico resistente ai futuri computer quantistici (immunità contro attacchi <em>Harvest Now, Decrypt Later</em>). Formato testo ASCII Armor compatibile direttamente con <code>pqpg</code>.
 </p>
 <p>
-<a href="/nymserver-pq-pubkey.bin"><strong>=&gt; Download: nymserver-pq-pubkey.bin (1184 byte)</strong></a>
+<a href="/nymserver-pq-pubkey.asc"><strong>=&gt; Scarica Chiave Testo ASCII Armor: nymserver-pq-pubkey.asc</strong></a>
+<br>
+<a href="/nymserver-pq-pubkey.bin"><strong>=&gt; Scarica Chiave Grezza Binaria (1.184 byte raw): nymserver-pq-pubkey.bin</strong></a>
 </p>
 
-<p>SHA256 Hash della Chiave Pubblica:<br>
-<code>12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4</code></p>
-<p>Algoritmo: NIST FIPS 203 ML-KEM-768</p>
+<ul>
+  <li><strong>Formato Testo</strong>: ASCII Armor (Header: <code>-----BEGIN PQPG PUBLIC KEY-----</code>)</li>
+  <li><strong>Algoritmi Ibridi</strong>: NIST FIPS 203 ML-KEM-768 + X25519 (DH) + Ed25519 (Firme)</li>
+  <li><strong>Client Standalone</strong>: <a href="/bin/pqpg-linux-amd64"><strong>pqpg-linux-amd64</strong></a></li>
+</ul>
+
+<h4>Blocco Chiave Post-Quantica ASCII Armor (Copia &amp; Incolla)</h4>
+<pre><code>-----BEGIN PQPG PUBLIC KEY-----
+
+UFFQSwG+oNeUsPQ5ciM3P28ngXRj2NK8ecb9wU8nWN0CPSS3uQA8+j6o66omOdC7
+vI8yGj7+JavEzeeCyLs79GZl/e8wrpuuogiLBFBgt8Y3pqi5+BTMROe7OVxrknKW
+esJSCDVS6Rk0FdwjWkVZnhqM0SWepriO8aLPSCpHCUu6N0tlk1K2PhtZIsaHXVRm
+XFJz/yaOZXDPw7iEtAo9OPsNrPnDcfqJdrBkrjV0rNSILOU6lbODErohpTkYTSBZ
+O9ktRGkJsqpi6FmqYOW3H2wtVVIis+QfRlNOU4PPfwGXr4tW88RGvASiF/SR56Eg
+7hsQbbFVfYhJH4CSAhFQ9+c4nMV2uIeskPw2teZlMxdDXvwqSXokxlqg+/JD6MRY
+/+Kt3uHNlJIs+CKAFyoOR3WpsHTGP8sT+Ed4uOQIXKgTNvEyhpNMBlAL8VfB6NYu
+w/JtU9CixSN+FeJFFQhaAZesK9k9dQunOSe2+NsS9CCDruRGJJSeZhB4vDI9roec
+J6sFd+kDixoQvhhc0GggXlWmXfYMfXwjfHkeAZkW1uFJQ/mcOZAkTjilk+EGMElT
+VNDCj9fMvvDOaKtPV5yeyczIQccPlVevFaomjfWlWhFQJCiXEMevWzdGvqq3Nsa4
+ENl1XFFedVMUSoHFHuHHEfRbW+Ykn2ms04RxTJhAqCTLbdx3hgpaq9VL65I8BrKK
+A7FywVEbHvZf7Aoqfxsi7Kd/YNlKgFFthPI++gKREHym9fevu7YM2IxiEwmN3Qk1
+Nbah/0VCB2R1NMB/N1dWO/q5UNVyy/hl2fWadxLJQeUFVJEXeINB/Oyt6HPEFSA+
+KhMDq0hnY0ST5osgmvyERTop5nyCZ5wNzAXOlzUbP3aqmvGlYVqnTvmESzGP5YIy
+eYu98oAQziuk45eISmoBmYWcjfRCafgHascq38GNYmpHjTEZ0PFQUwYWOVEBzyeQ
+c3tQh/wkzDk0ZBKDhsMZrjIPl8JIoXLPvccp+GJKVnoLy0p3ICCCUDeYB2Avb5eo
+pchAlumzVCN/eKMvaGO+XkuATYR/PMQ2WEHP0yGVTnpg2vYSxHK1XoG/j7eIASLG
+nTchqmce/MJycTi7h6CAL+KLMlV+MSdG4efHKlUbZ9BZisK7Vvc7gXQF9apRigLE
+tNaYY7NFZuEPwdgPZPB2WHUc6+SCAYJx9RSsvocpyLkYq7RTV2Wyr/wK+wpYFIEy
+ffyYwjA1RRhF75hp0nt4RQKaoNXMM/NSZTSvLSNYv/xIdrB+h7SF1SYo42xw0uO2
+IBeyFilBP3J1/vJ31QAgKDVzLLVBN9CVrXQW+fPCmkqdFyEKLbk5pPpGzOyjCbXF
+/JUa1pwBpSY2MwcXZzBLXQpVDlVIhIRC2hxxRXF7s9xwSccjj3yF9YFGGYRwNnPC
+aueEagYwQZNl9qKPstBIzAjN72EyXDx1wJlQ6dRuDynDG2NhyjuBXqpDk8BvQejJ
+tQlblzvHoWI7L0JBzQCplnYD2JyjDllBeVgkH5R5+vuaC3POmUOUX9YD1XkoIhdK
+EQWgBbMOrroA2folt8UEBnZNg8GdHviEzFET6HGhPOxDu4o7ueOSE7Mu87xmb7yN
+MFJpLYmKRHG0YfVB7rkYYUuEvGYeoLYqd1Gd7IweKs5ucdmTYSS14CXLFmbYc54g
+H2R4bxM=
+-----END PQPG PUBLIC KEY-----</code></pre>
 
 <div class="footer">
-  <p>Discussione &amp; Comunità: unisciti a noi sui newsgroup Usenet <strong>alt.privacy.anon-server</strong> e <strong>alt.cypherpunks</strong>.<br>
-  Maintainer: <strong>Gabx</strong> &bull; Codice sorgente: <a href="https://github.com/gabrix73/nymserv-ng">github.com/gabrix73/nymserv-ng</a> &bull; AGPL-3.0</p>
+  &copy; 2026 virebent.art &bull; Progetto 2 novembre &bull; Engine nymserv-ng v0.2.0 (Pure Rust AGPL-3.0)
 </div>
 
 </body>
