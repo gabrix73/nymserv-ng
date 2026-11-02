@@ -1,0 +1,7 @@
+hostname = "nymserv-ng.virebent.art"
+data_dir = "/var/lib/nymserv/data"
+keys_dir = "/var/lib/nymserv/keys"
+mta_command = "/usr/sbin/sendmail -t -oi"
+max_msg_per_day = 512
+require_confirm = false
+nym_key_id = "D455E394E202E5CC"

@@ -7,6 +7,7 @@ services:
       - ./data:/var/lib/nymserv/data
       - ./keys:/var/lib/nymserv/keys
       - ./config/nymserv.toml:/etc/nymserv/nymserv.toml:ro
+      - ./config/msmtprc:/etc/msmtprc:ro
     environment:
       - RUST_LOG=info
       - NYMSERV_HOSTNAME=nymserv-ng.virebent.art

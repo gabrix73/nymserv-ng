@@ -13,6 +13,12 @@ identity.key
 registry.bin
 /offline/
 /spool/
+/keys/
+/data/
+/target/
+*.redb
+*.bin
+*.asc
 
 # Editors
 *.swp
