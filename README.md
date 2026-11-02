@@ -1,171 +1,200 @@
 # nymserv-ng
 
-A pseudonymous email server for the live [YAMN](https://github.com/crooks/yamn)
-mix network. Protocol-compatible with Zax-style
-[nymserv](https://github.com/crooks/nymserv), independently implemented in Go,
-with modern primitives, per-message forward secrecy and a mix pool on the
-delivery path.
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![Language: Rust](https://img.shields.io/badge/Language-Rust-orange.svg)](https://www.rust-lang.org/)
+[![Post-Quantum: NIST FIPS 203](https://img.shields.io/badge/PQ-ML--KEM--768-green.svg)](https://csrc.nist.gov/pubs/fips/203/final)
 
-**Status: early. Not deployable. Do not use this for a real pseudonym.**
+**nymserv-ng** is a high-assurance, dual-stack pseudonymous email server (nymserver) written in pure Rust. It provides two-way untraceable communications across the Internet by decoupling public email addresses from user identities using cryptographic Reply-Blocks.
 
-The registry, envelope, ingest and daemon skeleton work and are tested. The
-message pool, the outbound path, the OpenPGP compatibility layer and the client
-are not written yet. See [Roadmap](#roadmap).
+It natively introduces a **Post-Quantum channel** powered by **NIST FIPS 203 ML-KEM-768**, ChaCha20-Poly1305, and `pqpg` ASCII Armor, while retaining full backward compatibility with the legacy OpenPGP (GnuPG / Ghionym / Zax) ecosystem.
 
 ---
 
-## What it does differently
+## Live Deployment ("2 novembre")
 
-YAMN is a forward-only Type II mix network: it has no reply blocks and no
-SURBs. That single fact determines the whole architecture, and it is why the
-reply-block design of the original nym.alias.net nymserv cannot be ported to it.
+* **Web Portal (Trilingual EN / IT / FR)**: [https://nymserv-ng.virebent.art/](https://nymserv-ng.virebent.art/)
+* **Gemini Capsule**: `gemini://nymserv-ng.virebent.art/`
+* **Automated Email Interface**:
+  * `help@nymserv-ng.virebent.art` — Automated command suite manual
+  * `key@nymserv-ng.virebent.art` — Official server public keys (OpenPGP & ML-KEM-768)
+  * `config@nymserv-ng.virebent.art` — Alias registration and key updates
+  * `send@nymserv-ng.virebent.art` — Outbound authenticated email dispatch
+  * `list@nymserv-ng.virebent.art` — Public alias directory
 
-Messages **from** a nym travel out over YAMN as ordinary forward messages.
-Messages **to** a nym are encrypted, padded, pooled and published to a shared
-mailbox (`alt.anonymous.messages`) that the owner polls over Tor. The recipient
-anonymity set is every reader of that mailbox rather than one reply-block
-holder, and there is no return path on the server for anyone to seize.
+---
 
-Against the original implementation:
+## Key Features
 
-| | Zax nymserv | nymserv-ng |
-|---|---|---|
-| Crypto | OpenPGP / GnuPG | X25519, XChaCha20-Poly1305, Ed25519, BLAKE2b |
-| Forward secrecy | None | Per-message, via one-time prekeys |
-| Subject tags | Static key | Ratcheted; past posts unlinkable after seizure |
-| Server state | Files on disk | Sealed registry, key held off-host |
-| Delivery timing | Immediate | Binomial mix pool with dummy traffic |
-| Server identity key | On the server | Offline; the host cannot sign for itself |
+* **Pure Rust Architecture**: 100% safe Rust core (`edition = "2021"`), eliminating memory vulnerabilities and external runtime dependencies.
+* **Dual-Stack Cryptography**:
+  * **Post-Quantum Native Channel**: NIST FIPS 203 ML-KEM-768 (Kyber) + X25519 hybrid encapsulation, ChaCha20-Poly1305 AEAD, and Ed25519 digital signatures. Uses standard ASCII-armored format compatible with [`pqpg`](https://github.com/gabrix73/pqpg).
+  * **Legacy OpenPGP Channel**: Pure-Rust OpenPGP implementation powered by `sequoia-openpgp` (RSA-4096 / Ed25519) supporting standard PGP-encrypted `Config:` blocks and Reply-Blocks.
+* **Flexible Reply-Blocks**:
+  * **Direct Delivery**: Delivers encrypted emails directly to recipient mailboxes.
+  * **Mixnet Multi-Hop Routing**: Supports nested YAMN and Mixmaster encrypted reply-blocks, allowing users to receive replies without revealing their real email address or IP even to the nym server operator.
+* **Embedded ACID Database**: Powered by `redb` for zero-maintenance, zero-dependency, crash-safe embedded key-value storage.
+* **Memory Hygiene**: Uses `zeroize` and `secrecy` to ensure private cryptographic material is scrubbed from RAM immediately after use.
+* **MTA & Container Integration**: Works natively with Postfix / OpenSMTPD via LMTP or pipe delivery agent (`nymserv-lda`), running inside an isolated rootless container.
 
-Existing Zax users are supported in a deprecated legacy mode, and can migrate
-in place without losing their alias.
+---
 
-## Documentation
+## Server Public Keys
 
-[`doc/design.md`](doc/design.md) is the specification: threat model, wire
-formats, key hierarchy, pool parameters, and an explicit list of the attacks
-this design does **not** defeat. Read section 5 before trusting it with
-anything.
+The server operates with dual keys for both channels:
 
-## Layout
+1. **Post-Quantum Channel (`nymserver-pq-pubkey.asc`)**:
+   * **Algorithm**: NIST FIPS 203 ML-KEM-768 + X25519 + Ed25519 (Hybrid)
+   * **Format**: ASCII Armor (`-----BEGIN PQPG PUBLIC KEY-----`)
+   * **SHA256**: `277df4d834cb0cbd6d4e1d3e4be3b50beb10d6b59059240a4b11c225108d89a3`
+   * **Download**: [https://nymserv-ng.virebent.art/nymserver-pq-pubkey.asc](https://nymserv-ng.virebent.art/nymserver-pq-pubkey.asc)
 
-```
-cmd/nymservd            daemon: ingest, dispatch, control socket
-cmd/nymserv-lda         MTA delivery agent: stdin to socket, nothing else
-cmd/nymserv-keytool     OFFLINE identity key and bundle signing
-cmd/nymserv-democlient  test harness -- not the real client
-internal/registry       sealed registry, hSub ratchet, prekeys, replay cache
-internal/envelope       inbound envelope, server key bundles
-internal/ingest         wire format between the agent and the daemon
-```
+2. **Legacy OpenPGP Channel (`nymserver-openpgp.asc`)**:
+   * **Algorithm**: RSA 4096-bit
+   * **Key ID**: `0x789C19FA8654FD1B`
+   * **Format**: OpenPGP ASCII Armor (`-----BEGIN PGP PUBLIC KEY BLOCK-----`)
+   * **Download**: [https://nymserv-ng.virebent.art/nymserver-openpgp.asc](https://nymserv-ng.virebent.art/nymserver-openpgp.asc)
 
-## Build
+Both keys can also be retrieved automatically by sending a blank email to `key@nymserv-ng.virebent.art`.
 
-Requires Go 1.23 or later.
+---
 
-```
-[user]  git clone https://git.virebent.art/virebent/nymserv-ng
-[user]  cd nymserv-ng
-[user]  go vet ./...
-[user]  go test -race ./...
-[user]  CGO_ENABLED=0 GOFLAGS="-trimpath -mod=readonly" \
-          go build -ldflags="-s -w -buildid=" -tags netgo,osusergo -o bin/ ./cmd/...
-```
-
-Fuzz the envelope parser, which is the only component that reads
-attacker-controlled input on the modern path:
+## Repository Structure
 
 ```
-[user]  go test -run xxx -fuzz FuzzOpen -fuzztime 5m ./internal/envelope/
+.
+├── Cargo.toml                  # Cargo dependencies and workspace metadata
+├── Dockerfile                  # Multi-stage production container build
+├── docker-compose.yml          # Container topology for deployment
+├── src/
+│   ├── lib.rs                  # Core library exports
+│   ├── bin/
+│   │   ├── nymserv-lda.rs      # Local Delivery Agent (MTA pipe processor)
+│   │   ├── nymserv-ctl.rs      # Administrative and debugging CLI
+│   │   └── nymservd.rs         # Background daemon coordinator
+│   ├── crypto/
+│   │   ├── mod.rs              # Cryptographic abstraction layer
+│   │   └── pqpg.rs             # ML-KEM-768, X25519, AEAD & ASCII Armor engine
+│   ├── protocol/
+│   │   ├── mod.rs              # Protocol definitions
+│   │   └── ghio.rs             # Ghionym/Zax Config parser and envelope codec
+│   ├── storage/
+│   │   ├── mod.rs              # Database interfaces
+│   │   └── db.rs               # redb storage implementation
+│   └── mta/
+│       └── mod.rs              # Outbound SMTP dispatcher
+└── www/                        # Static web & Gemini capsules (EN/IT/FR)
 ```
 
-There are deliberately no build or deployment scripts. Every step is meant to
-be run and understood individually.
+---
 
-## First run
+## Building from Source
 
-`nymservd` starts sealed and processes nothing until the registry passphrase is
-supplied over the control socket. The passphrase is never stored on the host.
+### Prerequisites
 
-```
-[root]      adduser --system --group --home /var/lib/nymserv \
-              --shell /usr/sbin/nologin --disabled-password nymserv
-[root]      install -d -o nymserv -g nymserv -m 0700 /var/lib/nymserv/db /run/nymserv
-```
+* Rust 1.80 or later (MSRV)
+* Cargo and standard build tools (`build-essential` on Debian/Ubuntu)
 
-The spool must be on tmpfs with swap disabled. Overwriting a file in place is
-not reliable deletion on a journalled or copy-on-write filesystem, so the only
-way a deleted spool file stays gone is for it never to have reached stable
-storage.
+### Build Commands
 
-```
-[root]      # /etc/fstab
-            tmpfs /var/lib/nymserv/spool tmpfs rw,nosuid,nodev,noexec,noatime,mode=0700,uid=nymserv,gid=nymserv,size=64M 0 0
-[root]      swapoff -a
-```
+```bash
+# Clone the repository
+git clone https://github.com/gabrix73/nymserv-ng.git
+cd nymserv-ng
 
-On an **offline** machine, generate the server identity. Its private half must
-never exist on the server:
+# Build release binaries
+cargo build --release
 
-```
-[user]      nymserv-keytool identity-gen -dir ./offline
+# Binaries produced in target/release/:
+# - nymserv-lda (MTA pipe ingest)
+# - nymserv-ctl (CLI management tool)
+# - nymservd    (Service daemon)
 ```
 
-Create the registry and start the daemon:
+---
 
-```
-[nymserv]   nymservd -init -db /var/lib/nymserv/db/registry.bin
-[nymserv]   nymservd -db /var/lib/nymserv/db/registry.bin \
-              -spool /var/lib/nymserv/spool/out \
-              -ingest-socket /run/nymserv/ingest.sock \
-              -control-socket /run/nymserv/control.sock
-```
+## Quickstart: Creating a Pseudonym
 
-Unseal and set up keys over the control socket, reached through an onion
-service:
+### Option A: Post-Quantum Channel (Recommended)
 
-```
-[nymadmin]  socat - UNIX-CONNECT:/run/nymserv/control.sock
-            unseal
-            <passphrase>
-            set-identity <identity public key from the offline machine>
-            rotate
-            keys
-```
+1. **Obtain the `pqpg` tool**:
+   ```bash
+   # Download Linux x86_64 binary
+   curl -sO https://nymserv-ng.virebent.art/bin/pqpg-linux-amd64
+   chmod +x pqpg-linux-amd64 && sudo mv pqpg-linux-amd64 /usr/local/bin/pqpg
+   ```
 
-`rotate` prints the new X25519 public key. Take it to the offline machine,
-sign it, and import the result:
+2. **Generate your PQ keypair**:
+   ```bash
+   mkdir -p ~/Nym-pq && cd ~/Nym-pq
+   pqpg keygen
+   # Generates identity.pub and identity.key
+   ```
 
-```
-[user]      nymserv-keytool bundle-sign -identity ./offline/identity.key -enc-pub <hex>
-[nymadmin]  import-bundle <base64>
-```
+3. **Fetch server public key**:
+   ```bash
+   curl -sO https://nymserv-ng.virebent.art/nymserver-pq-pubkey.asc
+   ```
 
-The daemon can verify a bundle but can never produce one. That is the point of
-the split: an attacker who compromises the running host can read mail, but
-cannot redirect clients to a key they control.
+4. **Prepare `config.txt`**:
+   ```text
+   Config:
+   From: youralias@nymserv-ng.virebent.art
+   Public-Key:
+   -----BEGIN PQPG PUBLIC KEY-----
+   ... (contents of identity.pub) ...
+   -----END PQPG PUBLIC KEY-----
+   Reply-Block:
+   ::
+   Anon-To: your_real_email@secure-provider.org
 
-## Roadmap
+   Nym-Commands: +cryptrecv +pqsend
+   ```
 
-Done: registry, envelope, server key hierarchy and rotation, ingest path,
-daemon skeleton, control socket.
+5. **Encrypt and dispatch**:
+   ```bash
+   pqpg encrypt --recipient-key nymserver-pq-pubkey.asc config.txt > config.asc
+   # Send config.asc to config@nymserv-ng.virebent.art
+   ```
 
-Next, in order:
+### Option B: Legacy OpenPGP Channel (GnuPG)
 
-1. `internal/pool` — binomial mix, dummy scheduler, bucket padding. **Until
-   this exists there is no mixing at all**: arrival and release are correlated
-   one to one.
-2. `internal/outbound` — mail2news submission through YAMN
-3. `internal/pgpcompat` — legacy OpenPGP mode, isolated and fuzzed
-4. `Config:` grammar handling (design §3.9)
-5. `nymclient` — the real client: prekeys, ratchet window, polling over Tor
+1. **Generate your GPG key**:
+   ```bash
+   gpg --quick-generate-key "youralias <youralias@nymserv-ng.virebent.art>" rsa4096
+   ```
 
-## Attribution
+2. **Fetch server OpenPGP key**:
+   ```bash
+   curl -sO https://nymserv-ng.virebent.art/nymserver-openpgp.asc
+   gpg --import nymserver-openpgp.asc
+   ```
 
-The Zax-style nymserver model, the `Config:` grammar this implementation
-follows, and the YAMN network itself are the work of Steve Crook (Zax). This is
-an independent implementation, not a fork; see [NOTICE](NOTICE).
+3. **Prepare `config.txt`**:
+   ```text
+   Config:
+   From: youralias@nymserv-ng.virebent.art
+   Public-Key:
+   -----BEGIN PGP PUBLIC KEY BLOCK-----
+   ... (exported armored public key) ...
+   -----END PGP PUBLIC KEY BLOCK-----
+   Reply-Block:
+   ::
+   Anon-To: your_real_email@secure-provider.org
+
+   Nym-Commands: +cryptrecv
+   ```
+
+4. **Encrypt with server key and send**:
+   ```bash
+   gpg --armor --recipient "0x789C19FA8654FD1B" --encrypt config.txt
+   # Send config.txt.asc to config@nymserv-ng.virebent.art
+   ```
+
+---
 
 ## Licence
 
-AGPL-3.0-or-later. See [LICENSE](LICENSE).
+Licensed under the **Affero General Public License v3.0** ([AGPL-3.0-only](LICENSE)).
+
+Author: **Gab Virebent** `<gabriel1@virebent.art>`
+Website: [https://virebent.art](https://virebent.art)
