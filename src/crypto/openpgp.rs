@@ -6,8 +6,9 @@ use openpgp::parse::stream::{
     DecryptorBuilder, DecryptionHelper, VerificationHelper, MessageStructure,
 };
 use openpgp::crypto::SessionKey;
+use openpgp::serialize::stream::{Armorer, Encryptor, LiteralWriter, Message};
 use openpgp::Fingerprint;
-use std::io::Read;
+use std::io::{Read, Write};
 
 #[derive(Error, Debug)]
 pub enum PgpError {
@@ -90,4 +91,29 @@ pub fn decrypt_message(secret_key_armor: &str, encrypted_data: &[u8]) -> Result<
         .map_err(|e| PgpError::DecryptionError(format!("Decryption read failure: {}", e)))?;
 
     Ok(decrypted)
+}
+
+/// Encrypts plaintext bytes for an armored recipient public key, returning armored PGP ciphertext
+pub fn encrypt_message(recipient_pubkey_armor: &str, plaintext: &[u8]) -> Result<String, PgpError> {
+    let cert = Cert::from_bytes(recipient_pubkey_armor.as_bytes())
+        .map_err(|e| PgpError::DecryptionError(format!("Failed to parse recipient cert: {}", e)))?;
+
+    let policy = openpgp::policy::StandardPolicy::new();
+    let recipients = cert.keys().with_policy(&policy, None).supported().alive().revoked(false).for_transport_encryption();
+
+    let mut armored_sink = Vec::new();
+    let message = Message::new(&mut armored_sink);
+    let armorer = Armorer::new(message).build()
+        .map_err(|e| PgpError::DecryptionError(format!("Armorer build error: {}", e)))?;
+    let encryptor = Encryptor::for_recipients(armorer, recipients).build()
+        .map_err(|e| PgpError::DecryptionError(format!("Encryptor build error: {}", e)))?;
+    let mut literal = LiteralWriter::new(encryptor).build()
+        .map_err(|e| PgpError::DecryptionError(format!("LiteralWriter build error: {}", e)))?;
+    literal.write_all(plaintext)
+        .map_err(|e| PgpError::DecryptionError(format!("Write error: {}", e)))?;
+    literal.finalize()
+        .map_err(|e| PgpError::DecryptionError(format!("Finalize error: {}", e)))?;
+
+    String::from_utf8(armored_sink)
+        .map_err(|e| PgpError::DecryptionError(format!("UTF-8 conversion error: {}", e)))
 }

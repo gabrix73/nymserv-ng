@@ -117,6 +117,19 @@ impl NymStore {
         Ok(())
     }
 
+    pub fn list_aliases(&self) -> Result<Vec<String>, StoreError> {
+        let read_txn = self.db.begin_read().map_err(|e| StoreError::DbError(e.to_string()))?;
+        let table = read_txn.open_table(ALIASES_TABLE).map_err(|e| StoreError::DbError(e.to_string()))?;
+        let mut list = Vec::new();
+        let iter = table.iter().map_err(|e| StoreError::DbError(e.to_string()))?;
+        for item in iter {
+            let (k, _) = item.map_err(|e| StoreError::DbError(e.to_string()))?;
+            list.push(k.value().to_string());
+        }
+        list.sort();
+        Ok(list)
+    }
+
     pub fn check_and_record_replay(&self, msg_id: &str, expiry: u64, now: u64) -> Result<(), StoreError> {
         let write_txn = self.db.begin_write().map_err(|e| StoreError::DbError(e.to_string()))?;
         {
