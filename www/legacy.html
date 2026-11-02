@@ -12,7 +12,7 @@
     font-size: 15px;
     line-height: 1.55;
     margin: 2rem auto;
-    max-width: 75ch;
+    max-width: 80ch;
     padding: 0 1rem;
   }
   h1 { font-size: 1.35rem; margin-bottom: 0.2rem; color: #ffffff; }
@@ -20,8 +20,8 @@
   .skull-icon { fill: #ffffff; vertical-align: -3px; margin-right: 0.35rem; display: inline-block; }
 
   h2 { font-size: 1.05rem; font-weight: normal; color: #a0a0a0; margin-top: 0; }
-  h3 { font-size: 1.1rem; color: #f0f0f0; margin-top: 2rem; border-bottom: 1px solid #333; padding-bottom: 0.3rem; }
-  h4 { font-size: 0.95rem; color: #cfcfcf; margin-bottom: 0.3rem; }
+  h3 { font-size: 1.15rem; color: #f0f0f0; margin-top: 2rem; border-bottom: 1px solid #333; padding-bottom: 0.4rem; }
+  h4 { font-size: 1rem; color: #cfcfcf; margin-top: 1.4rem; margin-bottom: 0.3rem; }
   a { color: #72a9ff; text-decoration: none; }
   a:hover { text-decoration: underline; }
   .lang-bar {
@@ -45,6 +45,27 @@
   .menu li { margin: 0.35rem 0; }
   .menu li::before { content: "=> "; color: #888; font-weight: bold; }
   .active-nav { color: #ffffff; font-weight: bold; }
+  .callout {
+    background: #1c222d;
+    border-left: 4px solid #3d71d9;
+    padding: 0.8rem 1rem;
+    margin: 1.2rem 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .callout-title { font-weight: bold; color: #9bbdfc; margin-bottom: 0.3rem; }
+  .cmd-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+  .cmd-table th, .cmd-table td {
+    border: 1px solid #333;
+    padding: 0.55rem 0.75rem;
+    text-align: left;
+  }
+  .cmd-table th { background: #202020; color: #fff; }
+  .cmd-table tr:nth-child(even) { background: #181818; }
   pre {
     background: #1e1e1e;
     border: 1px solid #333;
@@ -52,19 +73,21 @@
     overflow-x: auto;
     font-size: 0.9rem;
     border-radius: 4px;
+    line-height: 1.45;
   }
-  code { background: #222; padding: 0.1rem 0.3rem; border-radius: 3px; }
-  ul { padding-left: 1.4rem; }
-  li { margin-bottom: 0.35rem; }
+  code { background: #222; padding: 0.1rem 0.35rem; border-radius: 3px; color: #f2c078; }
+  pre code { background: none; padding: 0; color: #e2e2e2; }
+  ul, ol { padding-left: 1.4rem; }
+  li { margin-bottom: 0.45rem; }
   hr { border: 0; border-top: 1px solid #333; margin: 2rem 0; }
   .footer { color: #888; font-size: 0.85rem; margin-top: 3rem; border-top: 1px solid #2a2a2a; padding-top: 1rem; }
 </style>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
 </head>
 <body>
 
-<div class="lang-bar" aria-label="Language selection">
+<div class="lang-bar" aria-label="Language selector">
   Language: <span class="current-lang">EN (English)</span> | <a href="/it/legacy.html">IT (Italiano)</a> | <a href="/fr/legacy.html">FR (Français)</a>
 </div>
 
@@ -77,79 +100,182 @@
     <li><a href="/legacy.html" class="active-nav">Legacy Channel Guide (OpenPGP / GnuPG / Ghionym)</a></li>
     <li><a href="/postquantum.html">Post-Quantum Channel Guide (NIST ML-KEM / pqpg)</a></li>
     <li><a href="/keys.html">Server Public Keys &amp; Fingerprints</a></li>
-    <li><a href="/legacy.gmi">Gemtext Version (/legacy.gmi)</a></li>
+    <li><a href="/legacy.gmi">Gemtext Variant (/legacy.gmi)</a></li>
   </ul>
 </nav>
 
 <p>
-The legacy channel of <strong>nymserv-ng</strong> maintains 100% bit-level backward compatibility with the historic <code>crooks/ghionym</code> (<code>nymserver.pl</code>) standard.
-If you use existing remailer scripts, GnuPG (<code>gpg</code>), Mixmaster, or YAMN, you can register and operate your pseudonym without any changes to your client setup.
+The legacy channel of <strong>nymserv-ng</strong> is 100% bit-level compatible with the historical <code>crooks/ghionym</code> standard (<code>nymserver.pl</code>).
+All operations (help docs, public keys, alias registration, inbound reading, and outbound sending) can be conducted <strong>completely over email</strong> without opening a web browser.
 </p>
+
+<div class="callout">
+  <div class="callout-title">What is a Nymserver in Plain English?</div>
+  A nymserver provides you with a persistent, anonymous pseudonym email address (e.g. <code>youralias@nymserv-ng.virebent.art</code>).<br>
+  When someone emails your alias, the server <strong>encrypts</strong> the message with your PGP public key and forwards it to your real mailbox or through an onion chain of anonymous remailers (Reply-Block).
+  Correspondents never know who or where you are; and your email provider only sees incoming encrypted PGP blobs from the nymserver.
+</div>
 
 <hr>
 
-<h3>1. How to Register an Alias (Config)</h3>
+<h3>1. Automated Email Commands (Browser-Free Interaction)</h3>
 <p>
-Compose a plain text file containing a standard <code>Config:</code> block, encrypt it with the server's OpenPGP public key (Key ID: <code>D455E394E202E5CC</code>), and transmit it (ideally through YAMN remailers) to:
-<br>
-<code>config@nymserv-ng.virebent.art</code>
+You can send standard emails from your favorite mail client or terminal to the following automated server addresses:
 </p>
 
-<pre>Config:
+<table class="cmd-table">
+  <thead>
+    <tr>
+      <th>Destination Address</th>
+      <th>Subject / Body</th>
+      <th>Server Automated Response</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>help@nymserv-ng.virebent.art</code><br><i>(or <code>info@</code>)</i></td>
+      <td>Any (can be empty)</td>
+      <td>Replies immediately with the complete command reference and protocol documentation.</td>
+    </tr>
+    <tr>
+      <td><code>key@nymserv-ng.virebent.art</code><br><i>(or <code>remailer-key@</code>)</i></td>
+      <td>Any (can be empty)</td>
+      <td>Replies with the server's official public keys (OpenPGP ASCII armor and ML-KEM-768).</td>
+    </tr>
+    <tr>
+      <td><code>key@nymserv-ng.virebent.art</code></td>
+      <td>Subject or body:<br><code>get &lt;alias&gt;</code></td>
+      <td>Queries the database for the given pseudonym and returns its registered PGP public key.</td>
+    </tr>
+    <tr>
+      <td><code>finger@nymserv-ng.virebent.art</code></td>
+      <td>Subject or body:<br><code>&lt;alias&gt;</code></td>
+      <td>Alias public key lookup (equivalent to <code>key@</code> with <code>get &lt;alias&gt;</code>).</td>
+    </tr>
+    <tr>
+      <td><code>list@nymserv-ng.virebent.art</code><br><i>(or <code>used@</code>)</i></td>
+      <td>Any (can be empty)</td>
+      <td>Replies with the complete sorted list of all registered pseudonyms currently taken.</td>
+    </tr>
+    <tr>
+      <td><code>nobody@nymserv-ng.virebent.art</code></td>
+      <td>Any</td>
+      <td>Silently drops the message with exit code 0 (blackhole / delivery verification).</td>
+    </tr>
+    <tr>
+      <td><code>config@nymserv-ng.virebent.art</code></td>
+      <td>Encrypted <code>Config:</code> block</td>
+      <td>Registers, updates, or deletes your pseudonym. Dispatches encrypted confirmation to your Reply-Block.</td>
+    </tr>
+    <tr>
+      <td><code>send@nymserv-ng.virebent.art</code></td>
+      <td>Encrypted and signed email</td>
+      <td>Strips identifying headers, attaches the nym disclaimer, and sends the email via clearnet.</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h3>2. Step-by-Step Guide for Beginners: Creating Your Alias</h3>
+
+<h4>Step 1: Generate your pseudonym GnuPG keypair</h4>
+<p>Open a terminal on your computer and generate a key dedicated to your new pseudonym:</p>
+<pre><code>gpg --batch --passphrase '' --quick-generate-key "youralias &lt;youralias@nymserv-ng.virebent.art&gt;" rsa4096 default 0</code></pre>
+<p><i>Note: Replace <code>youralias</code> with your chosen name. You may add a passphrase by removing <code>--passphrase ''</code>.</i></p>
+
+<h4>Step 2: Export your public key in text armor format</h4>
+<pre><code>gpg --armor --export youralias &gt; mykey.asc</code></pre>
+
+<h4>Step 3: Import the 2 novembre server public key</h4>
+<p>Download it from the site or request it by sending an email to <code>key@nymserv-ng.virebent.art</code>:</p>
+<pre><code>curl -s https://nymserv-ng.virebent.art/nymserver-openpgp.asc | gpg --import</code></pre>
+<p>Verify that the imported Key ID is: <code>D455E394E202E5CC</code></p>
+
+<h4>Step 4: Prepare the configuration file (config.txt)</h4>
+<p>Create a text file named <code>config.txt</code> with the following exact layout:</p>
+
+<pre><code>Config:
 From: youralias@nymserv-ng.virebent.art
 Public-Key:
 -----BEGIN PGP PUBLIC KEY BLOCK-----
-... your PGP public key block ...
+[PASTE HERE THE ENTIRE CONTENT OF mykey.asc]
 -----END PGP PUBLIC KEY BLOCK-----
 Reply-Block:
 ::
-Anon-To: your_real_mailbox@destination.org
-... Mixmaster / Remailer onion routing chain ...
+Anon-To: your_real_email@secure-provider.org
 
-Nym-Commands: +cryptrecv +acksend +sigsend</pre>
+Nym-Commands: +cryptrecv +sigsend</code></pre>
 
-<h4>Supported Configuration Flags</h4>
+<div class="callout">
+  <div class="callout-title">How Does the Reply-Block Work?</div>
+  The <strong>Reply-Block</strong> instructs the nymserver where to forward messages received for your alias.
+  <ul>
+    <li><strong>Direct Delivery Mode (Beginner friendly)</strong>: Using <code>Anon-To: your_real_email@secure-provider.org</code>, the server forwards directly to your real mailbox. External correspondents never see your real address because they only address <code>youralias@nymserv-ng.virebent.art</code>. All forwarded mail arrives encrypted with your PGP key.</li>
+    <li><strong>Anonymous Remailer Chain (Advanced)</strong>: If you do not want the nymserver operator to know your destination mailbox, generate an onion-encrypted multi-hop remailer block (e.g. using <code>yamn -r</code> or <code>mixmaster</code>).</li>
+  </ul>
+</div>
+
+<h4>Step 5: Encrypt config.txt with the server's public key</h4>
+<p>Encrypt the configuration file to the server's key:</p>
+<pre><code>gpg --armor --recipient 0xD455E394E202E5CC --encrypt config.txt</code></pre>
+<p>This creates the encrypted file <code>config.txt.asc</code>.</p>
+
+<h4>Step 6: Send the configuration to config@</h4>
+<p>Send the content of <code>config.txt.asc</code> to:</p>
+<pre><code>config@nymserv-ng.virebent.art</code></pre>
+<p>You can send this via your normal email client (pasting the armored block in the body) or from terminal:</p>
+<pre><code>mail -s "Config request" config@nymserv-ng.virebent.art &lt; config.txt.asc</code></pre>
+<p>The server parses the registration and dispatches an encrypted confirmation message to your Reply-Block.</p>
+
+<hr>
+
+<h3>3. How to Receive and Read Incoming Email (Inbound)</h3>
+<ol>
+  <li>Give out your pseudonym address to anyone: <code>youralias@nymserv-ng.virebent.art</code>.</li>
+  <li>When someone sends you an email, <strong>nymserv-ng</strong> receives it, encrypts it with your PGP public key (via <code>+cryptrecv</code>), attaches your Reply-Block, and delivers it to your destination mailbox.</li>
+  <li>In your real inbox, you will receive an encrypted message containing <code>-----BEGIN PGP MESSAGE-----</code>.</li>
+  <li>Save it as <code>msg.asc</code> and decrypt it with your private key:
+    <pre><code>gpg --decrypt msg.asc</code></pre>
+  </li>
+</ol>
+
+<hr>
+
+<h3>4. How to Send Email from Your Alias (Outbound via send@)</h3>
+<p>
+To send a clearnet email displaying your alias as the sender:
+</p>
+<ol>
+  <li>Create a text file with the message and target headers:
+<pre><code>From: youralias@nymserv-ng.virebent.art
+To: friend@destination.com
+Subject: Encrypted greeting
+
+Hello, this message was sent anonymously through nymserv-ng.</code></pre>
+  </li>
+  <li>Sign the message with your alias key and encrypt it to the server key (<code>0xD455E394E202E5CC</code>):
+<pre><code>gpg --sign --armor --default-key youralias message.txt
+gpg --armor --recipient 0xD455E394E202E5CC --encrypt message.txt.asc</code></pre>
+  </li>
+  <li>Send the resulting encrypted payload to:
+    <br>
+    <code>send@nymserv-ng.virebent.art</code>
+  </li>
+  <li>The server verifies your cryptographic signature, removes local relay traces, appends the anonymous disclaimer, and delivers the message to <code>friend@destination.com</code>.</li>
+</ol>
+
+<hr>
+
+<h3>5. Updating or Deleting Your Pseudonym</h3>
 <ul>
-  <li><code>+cryptrecv</code>: Encrypts all incoming clearnet emails with your public key prior to remailer delivery (enabled by default, strongly recommended).</li>
-  <li><code>+sigsend</code>: Enforces a valid PGP digital signature on all outbound messages sent under your alias.</li>
-  <li><code>+acksend</code>: Dispatches an encrypted receipt notification to your Reply-Block whenever an outbound email is processed.</li>
-  <li><code>+fixedsz</code>: Pads outbound messages to fixed size increments to frustrate packet length correlation attacks.</li>
+  <li><strong>Update Reply-Block</strong>: Send a new signed <code>Config:</code> message with the updated <code>Reply-Block:</code>.</li>
+  <li><strong>Temporarily Disable Alias</strong>: Send a <code>Config:</code> message containing <code>Nym-Commands: +disable</code>.</li>
+  <li><strong>Permanently Delete Alias</strong>: Send a signed <code>Config:</code> message containing <code>Nym-Commands: delete</code>.</li>
 </ul>
 
-<hr>
-
-<h3>2. Sending Email via Your Alias (Send)</h3>
-<p>
-To send a clearnet email under your pseudonymous identity, compose the message, sign it with your PGP private key, encrypt it to the server's OpenPGP key, and send it to:
-<br>
-<code>send@nymserv-ng.virebent.art</code>
-</p>
-
-<pre>From: youralias@nymserv-ng.virebent.art
-To: recipient@any-provider.org
-Subject: Greetings from the mixnet
-
-This message was routed and delivered anonymously via nymserv-ng.</pre>
-
-<hr>
-
-<h3>3. Server OpenPGP Key</h3>
-<p>
-Download the server's public key before submitting configuration or outbound mail:
-<br>
-<a href="/nymserver-openpgp.asc"><strong>=&gt; Download nymserver-openpgp.asc (Legacy Channel)</strong></a>
-</p>
-<p>
-Fingerprint:<br>
-<code>C5D1 1FC6 DD91 5E45 CE82  4B6E D455 E394 E202 E5CC</code>
-<br>
-Key ID:<br>
-<code>D455E394E202E5CC</code>
-</p>
-
 <div class="footer">
-  <p>Discussion &amp; Community: join us on Usenet newsgroups <strong>alt.privacy.anon-server</strong> and <strong>alt.cypherpunks</strong>.<br>
-  Maintainer: <strong>Gabx</strong> &bull; Source code: <a href="https://github.com/gabrix73/nymserv-ng">github.com/gabrix73/nymserv-ng</a> &bull; AGPL-3.0</p>
+  &copy; 2026 virebent.art &bull; 2 novembre project &bull; Engine nymserv-ng v0.2.0 (Pure Rust AGPL-3.0)
 </div>
 
 </body>

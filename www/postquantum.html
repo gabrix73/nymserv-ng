@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Post-Quantum Channel (NIST ML-KEM & pqpg) &bull; 2 novembre</title>
+<title>Post-Quantum Channel (ML-KEM) &bull; 2 novembre</title>
 <style>
   body {
     background: #141414;
@@ -12,7 +12,7 @@
     font-size: 15px;
     line-height: 1.55;
     margin: 2rem auto;
-    max-width: 75ch;
+    max-width: 80ch;
     padding: 0 1rem;
   }
   h1 { font-size: 1.35rem; margin-bottom: 0.2rem; color: #ffffff; }
@@ -20,8 +20,8 @@
   .skull-icon { fill: #ffffff; vertical-align: -3px; margin-right: 0.35rem; display: inline-block; }
 
   h2 { font-size: 1.05rem; font-weight: normal; color: #a0a0a0; margin-top: 0; }
-  h3 { font-size: 1.1rem; color: #f0f0f0; margin-top: 2rem; border-bottom: 1px solid #333; padding-bottom: 0.3rem; }
-  h4 { font-size: 0.95rem; color: #cfcfcf; margin-bottom: 0.3rem; }
+  h3 { font-size: 1.15rem; color: #f0f0f0; margin-top: 2rem; border-bottom: 1px solid #333; padding-bottom: 0.4rem; }
+  h4 { font-size: 1rem; color: #cfcfcf; margin-top: 1.4rem; margin-bottom: 0.3rem; }
   a { color: #72a9ff; text-decoration: none; }
   a:hover { text-decoration: underline; }
   .lang-bar {
@@ -45,6 +45,14 @@
   .menu li { margin: 0.35rem 0; }
   .menu li::before { content: "=> "; color: #888; font-weight: bold; }
   .active-nav { color: #ffffff; font-weight: bold; }
+  .callout {
+    background: #1c222d;
+    border-left: 4px solid #3d71d9;
+    padding: 0.8rem 1rem;
+    margin: 1.2rem 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .callout-title { font-weight: bold; color: #9bbdfc; margin-bottom: 0.3rem; }
   pre {
     background: #1e1e1e;
     border: 1px solid #333;
@@ -52,27 +60,26 @@
     overflow-x: auto;
     font-size: 0.9rem;
     border-radius: 4px;
+    line-height: 1.45;
   }
-  code { background: #222; padding: 0.1rem 0.3rem; border-radius: 3px; }
-  ul { padding-left: 1.4rem; }
-  li { margin-bottom: 0.35rem; }
-  table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
-  th, td { border: 1px solid #333; padding: 0.5rem 0.7rem; text-align: left; }
-  th { background: #222; color: #fff; }
+  code { background: #222; padding: 0.1rem 0.35rem; border-radius: 3px; color: #f2c078; }
+  pre code { background: none; padding: 0; color: #e2e2e2; }
+  ul, ol { padding-left: 1.4rem; }
+  li { margin-bottom: 0.45rem; }
   hr { border: 0; border-top: 1px solid #333; margin: 2rem 0; }
   .footer { color: #888; font-size: 0.85rem; margin-top: 3rem; border-top: 1px solid #2a2a2a; padding-top: 1rem; }
 </style>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
 </head>
 <body>
 
-<div class="lang-bar" aria-label="Language selection">
+<div class="lang-bar" aria-label="Language selector">
   Language: <span class="current-lang">EN (English)</span> | <a href="/it/postquantum.html">IT (Italiano)</a> | <a href="/fr/postquantum.html">FR (Français)</a>
 </div>
 
 <h1><svg class="skull-icon" viewBox="0 0 24 24" width="22" height="22" fill="#ffffff" style="vertical-align: -2px; margin-right: 0.35rem;" aria-hidden="true"><path d="M12 2C7.58 2 4 5.58 4 10c0 2.5 1.15 4.73 2.95 6.22.18.15.29.38.29.62V19c0 .55.45 1 1 1h1.5c.28 0 .5-.22.5-.5v-1c0-.28.22-.5.5-.5s.5.22.5.5v1c0 .28.22.5.5.5h1c.28 0 .5-.22.5-.5v-1c0-.28.22-.5.5-.5s.5.22.5.5v1c0 .28.22.5.5.5H16c.55 0 1-.45 1-1v-2.16c0-.24.11-.47.29-.62C19.09 14.53 20 12.38 20 10c0-4.42-3.58-8-8-8zm-3.5 10c-.83 0-1.5-.67-1.5-1.5S7.67 9 8.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm7 0c-.83 0-1.5-.67-1.5-1.5S14.67 9 15.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM12 14c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg><span class="brand-title">2 novembre</span></h1>
-<h2>Post-Quantum Protocol Guide &bull; NIST ML-KEM &amp; pqpg</h2>
+<h2>Post-Quantum Channel Guide &bull; NIST FIPS 203 ML-KEM-768</h2>
 
 <nav class="menu" aria-label="Main Navigation">
   <ul>
@@ -80,115 +87,107 @@
     <li><a href="/legacy.html">Legacy Channel Guide (OpenPGP / GnuPG / Ghionym)</a></li>
     <li><a href="/postquantum.html" class="active-nav">Post-Quantum Channel Guide (NIST ML-KEM / pqpg)</a></li>
     <li><a href="/keys.html">Server Public Keys &amp; Fingerprints</a></li>
-    <li><a href="/postquantum.gmi">Gemtext Version (/postquantum.gmi)</a></li>
+    <li><a href="/postquantum.gmi">Gemtext Variant (/postquantum.gmi)</a></li>
   </ul>
 </nav>
 
-<h3>Why Migrate to the Post-Quantum Channel?</h3>
 <p>
-While legacy OpenPGP remains fully supported for historical continuity, it presents architectural limitations that are no longer adequate for high-risk threat models:
+The Post-Quantum channel of <strong>nymserv-ng</strong> eliminates the systemic cryptographic obsolescence of classical public key algorithms (RSA and elliptic curves) against cryptanalytic quantum computers (Shor's algorithm and passive <em>Harvest Now, Decrypt Later</em> surveillance).
 </p>
 
-<table>
-  <thead>
-    <tr>
-      <th>Capability</th>
-      <th>Legacy OpenPGP</th>
-      <th>Post-Quantum Channel (NG)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><strong>Quantum Resistance</strong></td>
-      <td>Vulnerable to Shor's algorithm (RSA / ECC)</td>
-      <td><strong>Immune</strong> (NIST FIPS 203 ML-KEM-768)</td>
-    </tr>
-    <tr>
-      <td><strong>Forward Secrecy (PFS)</strong></td>
-      <td>None (static keys: seizure compromises all past traffic)</td>
-      <td><strong>Perfect</strong> (ephemeral X25519 per message session)</td>
-    </tr>
-    <tr>
-      <td><strong>Ciphertext Integrity</strong></td>
-      <td>Optional signatures / malleable packets</td>
-      <td><strong>Authenticated AEAD</strong> (ChaCha20-Poly1305)</td>
-    </tr>
-    <tr>
-      <td><strong>Software Stack</strong></td>
-      <td>Heavy GnuPG, dirmngr/agent daemons, C libraries</td>
-      <td><strong>pqpg: standalone pure-Rust binary (1.2 MB)</strong></td>
-    </tr>
-    <tr>
-      <td><strong>Air-Gapped Operation</strong></td>
-      <td>Cumbersome (file transfer or USB drives)</td>
-      <td><strong>Native terminal QR Code projection</strong></td>
-    </tr>
-  </tbody>
-</table>
+<div class="callout">
+  <div class="callout-title">Why Post-Quantum in Plain English?</div>
+  Messages encrypted with legacy RSA/PGP can be recorded by mass-surveillance programs today and decrypted a few years from now when quantum machines mature.<br>
+  The Post-Quantum channel protects your pseudonym identities using the standardized <strong>NIST FIPS 203 (ML-KEM-768 / Kyber)</strong> lattice algorithm, guaranteeing that your communications remain unconditionally unbreakable into the future.
+</div>
 
 <hr>
 
-<h3>The Client: pqpg (Post-Quantum Privacy Guard)</h3>
+<h3>1. How to Obtain the Server's Post-Quantum Public Key</h3>
 <p>
-To enable instant adoption of post-quantum cryptography without wrestling with complex toolchains, we provide <strong>pqpg</strong>, a standalone command-line cryptographic tool <strong>written entirely in pure Rust</strong> (memory-safe, zero buffer overflows, memory secured with <code>mlock</code> and <code>zeroize</code>).
+You can download the official ML-KEM-768 public encapsulation key directly via web or retrieve it automatically via email:
 </p>
-
-<h4>Direct Binary Download (Linux x86_64 Standalone, 1.2 MB)</h4>
-<pre>curl -sSL https://nymserv-ng.virebent.art/bin/pqpg-linux-amd64 -o ~/bin/pqpg
-chmod +x ~/bin/pqpg</pre>
-<p>SHA256: <code>fc1eabc6ec800b494545f558f520ec3493741977664d960cb2e7be75ea46e415</code></p>
-
-<h4>macOS and Windows Binaries</h4>
-<p>
-Precompiled releases for macOS (Apple Silicon M1-M4 &amp; Intel) and Windows (<code>pqpg-windows-amd64.exe</code>) are hosted on:<br>
-<a href="https://github.com/gabrix73/pqpg/releases"><strong>=&gt; GitHub Releases: github.com/gabrix73/pqpg/releases</strong></a>
-</p>
+<ul>
+  <li><strong>Via Web</strong>: <a href="/nymserver-pq-pubkey.bin"><strong>=&gt; Download nymserver-pq-pubkey.bin (1,184 bytes raw)</strong></a></li>
+  <li><strong>Via Email</strong>: Send an email to <code>key@nymserv-ng.virebent.art</code> (or <code>remailer-key@...</code>). The automated engine will reply with both the OpenPGP block and the hex-encoded ML-KEM-768 public key.</li>
+  <li><strong>SHA256 Fingerprint</strong>:<br>
+    <code>74c8ebca73fa8e7b9dd6329fc2f99580ef14cebb80ee7b3547fb0be550b7194f</code>
+  </li>
+</ul>
 
 <hr>
 
-<h3>Step-by-Step pqpg Quickstart</h3>
+<h3>2. Step-by-Step Guide for Beginners: Creating a Post-Quantum Alias</h3>
 
-<h4>1. Generate Your Keypair</h4>
-<pre>pqpg keygen -n mynym --qr</pre>
+<h4>Step 1: Generate your ML-KEM-768 keypair</h4>
 <p>
-Generates your private key <code>mynym.key</code> (saved with <code>0600</code> permissions) and public key <code>mynym.pub</code>.
-The <code>--qr</code> flag displays a high-density QR Code in your terminal, allowing an air-gapped camera or smartphone to ingest the public key without any network attachment.
+Use the official <code>nymserv-ctl</code> command-line utility (available in GitHub releases) or any FIPS 203 compatible library (Rust <code>ml-kem</code>, <code>liboqs</code>, or Python):
+</p>
+<pre><code># Generate PQ keypair with nymserv-ctl
+nymserv-ctl gen-keys --pq-only --out-dir ~/.nymserv-keys</code></pre>
+<p>
+This generates two files:
+<ul>
+  <li><code>user-pq-pubkey.bin</code> (1,184-byte public encapsulation key).</li>
+  <li><code>user-pq-secret.bin</code> (Private decapsulation key, keep strictly confidential).</li>
+</ul>
 </p>
 
-<h4>2. Encrypt a Message for a Recipient</h4>
-<pre>pqpg encrypt -r recipient.pub message.txt -o message.msg</pre>
-<p>Or pipe directly from standard input with QR display:</p>
-<pre>echo "Classified brief" | pqpg encrypt -r recipient.pub --qr</pre>
+<h4>Step 2: Prepare the PQ registration configuration</h4>
+<p>
+Create a text file <code>config-pq.txt</code> including your public key in hex format and your Reply-Block:
+</p>
 
-<h4>3. Decrypt Received Mail</h4>
-<pre>pqpg decrypt -s mynym.key message.msg</pre>
+<pre><code>Config:
+From: youralias-pq@nymserv-ng.virebent.art
+PQ-Algorithm: ML-KEM-768
+Public-Key-Hex:
+[PASTE HERE THE HEXADECIMAL STRING OF user-pq-pubkey.bin]
+Reply-Block:
+::
+Anon-To: your_real_email@secure-provider.org
 
-<h4>4. Digital Signatures and Verification (Ed25519)</h4>
-<pre># Sign a document (outputs a 64-byte detached signature)
-pqpg sign -s mynym.key document.pdf -o document.sig
+Nym-Commands: +cryptrecv +pqsend</code></pre>
 
-# Verify signature against author's public key
-pqpg verify -k author.pub -s document.sig document.pdf</pre>
+<h4>Step 3: Encapsulate and Encrypt for the Server</h4>
+<p>
+Encapsulate a 32-byte shared symmetric key using the server's public key (<code>nymserver-pq-pubkey.bin</code>) and encrypt the payload using ChaCha20-Poly1305:
+</p>
+<pre><code>nymserv-ctl pq-encrypt --recipient-key nymserver-pq-pubkey.bin config-pq.txt &gt; config-pq.bin.asc</code></pre>
 
-<h4>5. Air-Gapped Terminal QR Projection</h4>
-<pre>pqpg qr any_file.txt</pre>
+<h4>Step 4: Dispatch the registration to config@</h4>
+<p>Send the resulting payload to:</p>
+<pre><code>config@nymserv-ng.virebent.art</code></pre>
+<p>The server decapsulates the shared secret, inserts your pseudonym into the embedded ACID <code>redb</code> engine, and dispatches a post-quantum confirmation message to your Reply-Block.</p>
 
 <hr>
 
-<h3>Server Post-Quantum Public Key</h3>
+<h3>3. Receiving Post-Quantum Messages (Inbound)</h3>
 <p>
-To encapsulate alias registration requests or direct communications for nymserv-ng, download the server's official ML-KEM-768 public key:
-<br>
-<a href="/nymserver-pq-pubkey.bin"><strong>=&gt; Download nymserver-pq-pubkey.bin (Post-Quantum Channel, 1184 bytes)</strong></a>
+When anyone writes to <code>youralias-pq@nymserv-ng.virebent.art</code>:
 </p>
+<ol>
+  <li>The server encapsulates an ephemeral 32-byte secret against your ML-KEM-768 public key.</li>
+  <li>The message body is encrypted with ChaCha20-Poly1305.</li>
+  <li>The post-quantum ciphertext packet is dispatched to your Reply-Block.</li>
+  <li>On your machine, decapsulate the shared secret using <code>user-pq-secret.bin</code> and decrypt the payload instantly.</li>
+</ol>
+
+<hr>
+
+<h3>4. Sending Outbound Mail via Post-Quantum Channel (send@)</h3>
 <p>
-SHA256 Public Key:<br>
-<code>12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4</code>
+To send clearnet email displaying your PQ alias as the sender:
 </p>
+<ol>
+  <li>Sign the message with your Ed25519 or ML-DSA private key.</li>
+  <li>Encapsulate and encrypt the payload to the server's ML-KEM public key.</li>
+  <li>Send the encrypted message to <code>send@nymserv-ng.virebent.art</code>.</li>
+  <li>The server verifies the signature, appends the anonymous disclaimer, and delivers the message to the destination address.</li>
+</ol>
 
 <div class="footer">
-  <p>Discussion &amp; Community: join us on Usenet newsgroups <strong>alt.privacy.anon-server</strong> and <strong>alt.cypherpunks</strong>.<br>
-  Maintainer: <strong>Gabx</strong> &bull; Source code: <a href="https://github.com/gabrix73/nymserv-ng">github.com/gabrix73/nymserv-ng</a> &bull; AGPL-3.0</p>
+  &copy; 2026 virebent.art &bull; 2 novembre project &bull; Engine nymserv-ng v0.2.0 (Pure Rust AGPL-3.0)
 </div>
 
 </body>
