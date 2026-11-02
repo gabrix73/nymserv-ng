@@ -1,4 +1,4 @@
-# 2 novembre
+# ☠ 2 novembre
 ## nymserv-ng • Pseudonym Server for the YAMN Mix Network
 
 Language: EN (English) | => /it/index.gmi IT (Italiano) | => /fr/index.gmi FR (Français)

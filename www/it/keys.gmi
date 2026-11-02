@@ -1,4 +1,4 @@
-# 2 novembre
+# ☠ 2 novembre
 ## Chiavi Pubbliche Ufficiali del Server • nymserv-ng
 
 Lingua: => /keys.gmi EN (English) | IT (Italiano) | => /fr/keys.gmi FR (Français)

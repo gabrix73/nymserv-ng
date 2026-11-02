@@ -1,4 +1,4 @@
-# 2 novembre
+# ☠ 2 novembre
 ## Guida al Protocollo Legacy • OpenPGP / GnuPG / Ghionym
 
 Lingua: => /legacy.gmi EN (English) | IT (Italiano) | => /fr/legacy.gmi FR (Français)

@@ -1,4 +1,4 @@
-# 2 novembre
+# ☠ 2 novembre
 ## Post-Quantum Protocol Guide • NIST ML-KEM & pqpg
 
 Language: EN (English) | => /it/postquantum.gmi IT (Italiano) | => /fr/postquantum.gmi FR (Français)
