@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canale Legacy (OpenPGP) &bull; 2 novembre</title>
+<style>
+  body {
+    background: #141414;
+    color: #e2e2e2;
+    font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+    font-size: 15px;
+    line-height: 1.55;
+    margin: 2rem auto;
+    max-width: 75ch;
+    padding: 0 1rem;
+  }
+  h1 { font-size: 1.35rem; margin-bottom: 0.2rem; color: #ffffff; }
+  h2 { font-size: 1.05rem; font-weight: normal; color: #a0a0a0; margin-top: 0; }
+  h3 { font-size: 1.1rem; color: #f0f0f0; margin-top: 2rem; border-bottom: 1px solid #333; padding-bottom: 0.3rem; }
+  h4 { font-size: 0.95rem; color: #cfcfcf; margin-bottom: 0.3rem; }
+  a { color: #72a9ff; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .menu {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    padding: 0.8rem 1rem;
+    border-radius: 4px;
+    margin: 1.5rem 0;
+  }
+  .menu ul { list-style: none; padding-left: 0; margin: 0; }
+  .menu li { margin: 0.35rem 0; }
+  .menu li::before { content: "=> "; color: #888; font-weight: bold; }
+  .active-nav { color: #ffffff; font-weight: bold; }
+  pre {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    padding: 0.8rem;
+    overflow-x: auto;
+    font-size: 0.9rem;
+    border-radius: 4px;
+  }
+  code { background: #222; padding: 0.1rem 0.3rem; border-radius: 3px; }
+  ul { padding-left: 1.4rem; }
+  li { margin-bottom: 0.35rem; }
+  hr { border: 0; border-top: 1px solid #333; margin: 2rem 0; }
+  .footer { color: #888; font-size: 0.85rem; margin-top: 3rem; border-top: 1px solid #2a2a2a; padding-top: 1rem; }
+</style>
+</head>
+<body>
+
+<h1>2 novembre</h1>
+<h2>Guida al Protocollo Legacy &bull; OpenPGP / GnuPG / Ghionym</h2>
+
+<nav class="menu" aria-label="Navigazione Principale">
+  <ul>
+    <li><a href="/">Home (Introduzione e Panoramica)</a></li>
+    <li><a href="/legacy.html" class="active-nav">Guida Canale Legacy (OpenPGP / GnuPG / Ghionym)</a></li>
+    <li><a href="/modern.html">Guida Canale Moderno (Post-Quantum / ML-KEM / pqpg)</a></li>
+    <li><a href="/keys.html">Chiavi Pubbliche del Server &amp; Fingerprint</a></li>
+    <li><a href="/legacy.gmi">Versione Gemtext (/legacy.gmi)</a></li>
+  </ul>
+</nav>
+
+<p>
+Il canale legacy di <strong>nymserv-ng</strong> è compatibile al 100% con lo standard storico <code>crooks/ghionym</code> (<code>nymserver.pl</code>).
+Se utilizzi client storici, GnuPG (<code>gpg</code>), Mixmaster o script YAMN, puoi registrare e gestire il tuo alias senza apportare alcuna modifica al tuo setup.
+</p>
+
+<hr>
+
+<h3>1. Come Registrare un Alias (Config)</h3>
+<p>
+Componi un file di testo contenente il blocco <code>Config:</code>, cifralo con la chiave pubblica OpenPGP del server (Key ID: <code>D455E394E202E5CC</code>) e invialo (preferibilmente tramite YAMN o posta ordinaria) a:
+<br>
+<code>config@nymserv-ng.virebent.art</code>
+</p>
+
+<pre>Config:
+From: youralias@nymserv-ng.virebent.art
+Public-Key:
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+... il tuo blocco di chiave pubblica PGP ...
+-----END PGP PUBLIC KEY BLOCK-----
+Reply-Block:
+::
+Anon-To: your_real_mailbox@destination.org
+... catena a cipolla Mixmaster / Remailer ...
+
+Nym-Commands: +cryptrecv +acksend +sigsend</pre>
+
+<h4>Flag di Configurazione Supportati</h4>
+<ul>
+  <li><code>+cryptrecv</code>: Cifra tutte le mail in arrivo dal clearnet con la tua chiave pubblica prima della consegna (attivo di default, raccomandato).</li>
+  <li><code>+sigsend</code>: Richiede una firma digitale PGP valida su tutti i messaggi in uscita inviati a tuo nome.</li>
+  <li><code>+acksend</code>: Invia una notifica di avvenuta consegna cifrata al tuo Reply-Block a ogni messaggio spedito.</li>
+  <li><code>+fixedsz</code>: Riempie i messaggi a blocchi di dimensione fissa per contrastare l'analisi della lunghezza dei pacchetti.</li>
+</ul>
+
+<hr>
+
+<h3>2. Come Inviare Email tramite il tuo Alias (Send)</h3>
+<p>
+Per inviare un'email clearnet a nome del tuo alias pseudonimo, componi il messaggio, firmalo con la tua chiave privata PGP, cifralo con la chiave pubblica del server e invialo a:
+<br>
+<code>send@nymserv-ng.virebent.art</code>
+</p>
+
+<pre>From: youralias@nymserv-ng.virebent.art
+To: destinatario@qualsiasi-provider.org
+Subject: Saluti dalla rete anonima
+
+Questo messaggio è stato instradato e spedito tramite nymserv-ng.</pre>
+
+<hr>
+
+<h3>3. Chiave OpenPGP del Server</h3>
+<p>
+Scarica la chiave pubblica OpenPGP prima di inviare le tue richieste:
+<br>
+<a href="/nymserver-openpgp.asc"><strong>=&gt; Scarica nymserver-openpgp.asc (Legacy Channel)</strong></a>
+</p>
+<p>
+Fingerprint:<br>
+<code>C5D1 1FC6 DD91 5E45 CE82  4B6E D455 E394 E202 E5CC</code>
+<br>
+Key ID:<br>
+<code>D455E394E202E5CC</code>
+</p>
+
+<div class="footer">
+  <p>Discussione &amp; Comunità: unisciti a noi sui newsgroup Usenet <strong>alt.privacy.anon-server</strong> e <strong>alt.cypherpunks</strong>.<br>
+  Maintainer: <strong>Gabx</strong> &bull; Codice sorgente: <a href="https://github.com/gabrix73/nymserv-ng">github.com/gabrix73/nymserv-ng</a> &bull; AGPL-3.0</p>
+</div>
+
+</body>
+</html>

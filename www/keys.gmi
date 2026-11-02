@@ -1,0 +1,51 @@
+# 2 novembre
+## Chiavi Pubbliche Ufficiali del Server • nymserv-ng
+
+=> / Home (Introduzione e Panoramica)
+=> /legacy.gmi Guida Canale Legacy (OpenPGP / GnuPG / Ghionym)
+=> /modern.gmi Guida Canale Moderno (Post-Quantum / ML-KEM / pqpg)
+=> /keys.gmi Chiavi Pubbliche del Server & Fingerprint
+
+---
+
+Verifica sempre i fingerprint e gli hash crittografici prima di cifrare qualsiasi messaggio o richiesta di registrazione diretta a nymserv-ng.
+
+---
+
+### 1. Chiave Master OpenPGP (Canale Legacy)
+
+Utilizzata per cifrare le richieste Config: e send: nel protocollo storico GnuPG / Ghionym.
+
+=> /nymserver-openpgp.asc Scarica nymserver-openpgp.asc
+
+Fingerprint OpenPGP:
+`C5D1 1FC6 DD91 5E45 CE82  4B6E D455 E394 E202 E5CC`
+
+Long Key ID:
+`D455E394E202E5CC`
+
+Algoritmo: RSA 4096-bit
+User ID: nymserv-ng pseudonym server <config@nymserv-ng.virebent.art>
+
+---
+
+### 2. Chiave Master Post-Quantum (Canale Moderno)
+
+Utilizzata per l'incapsulamento crittografico KEM resistente all'analisi quantistica (Harvest Now, Decrypt Later immune).
+
+=> /nymserver-pq-pubkey.bin Scarica nymserver-pq-pubkey.bin (1184 byte)
+
+SHA256 Hash della Chiave Pubblica:
+`12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4`
+
+Algoritmo: NIST FIPS 203 ML-KEM-768
+
+---
+
+### Discussione & Comunità
+Unisciti alla discussione sui newsgroup Usenet:
+=> news:alt.privacy.anon-server alt.privacy.anon-server
+=> news:alt.cypherpunks alt.cypherpunks
+
+Maintainer: Gabx
+=> https://github.com/gabrix73/nymserv-ng Codice sorgente (AGPL-3.0)

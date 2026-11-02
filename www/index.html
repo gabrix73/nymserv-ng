@@ -15,166 +15,85 @@
     max-width: 75ch;
     padding: 0 1rem;
   }
-  h1 { font-size: 1.3rem; margin-bottom: 0.2rem; color: #ffffff; }
+  h1 { font-size: 1.35rem; margin-bottom: 0.2rem; color: #ffffff; }
   h2 { font-size: 1.05rem; font-weight: normal; color: #a0a0a0; margin-top: 0; }
   h3 { font-size: 1.1rem; color: #f0f0f0; margin-top: 2rem; border-bottom: 1px solid #333; padding-bottom: 0.3rem; }
-  h4 { font-size: 0.95rem; color: #cfcfcf; margin-bottom: 0.3rem; }
   a { color: #72a9ff; text-decoration: none; }
   a:hover { text-decoration: underline; }
-  pre {
-    background: #1e1e1e;
+  .menu {
+    background: #1a1a1a;
     border: 1px solid #333;
-    padding: 0.8rem;
-    overflow-x: auto;
-    font-size: 0.9rem;
+    padding: 0.8rem 1rem;
     border-radius: 4px;
+    margin: 1.5rem 0;
   }
-  code { background: #222; padding: 0.1rem 0.3rem; border-radius: 3px; }
+  .menu ul { list-style: none; padding-left: 0; margin: 0; }
+  .menu li { margin: 0.35rem 0; }
+  .menu li::before { content: "=> "; color: #888; font-weight: bold; }
+  .active-nav { color: #ffffff; font-weight: bold; }
   ul { padding-left: 1.4rem; }
-  li { margin-bottom: 0.3rem; }
+  li { margin-bottom: 0.35rem; }
   hr { border: 0; border-top: 1px solid #333; margin: 2rem 0; }
-  .nav-item::before { content: "=> "; color: #888; }
   .footer { color: #888; font-size: 0.85rem; margin-top: 3rem; border-top: 1px solid #2a2a2a; padding-top: 1rem; }
 </style>
 </head>
 <body>
 
 <h1>2 novembre</h1>
-<h2>nymserv-ng.virebent.art &bull; Dual-Stack Pseudonymous Mail Server</h2>
+<h2>nymserv-ng &bull; Pseudonym Server per la Rete YAMN</h2>
 
+<nav class="menu" aria-label="Navigazione Principale">
+  <ul>
+    <li><a href="/" class="active-nav">Home (Introduzione e Panoramica)</a></li>
+    <li><a href="/legacy.html">Guida Canale Legacy (OpenPGP / GnuPG / Ghionym)</a></li>
+    <li><a href="/modern.html">Guida Canale Moderno (Post-Quantum / ML-KEM / pqpg)</a></li>
+    <li><a href="/keys.html">Chiavi Pubbliche del Server &amp; Fingerprint</a></li>
+    <li><a href="/index.gmi">Capsula Gemini Nativa (gemini://nymserv-ng.virebent.art)</a></li>
+  </ul>
+</nav>
+
+<h3>Cos'è un Nymserver?</h3>
 <p>
-Welcome to <strong>nymserv-ng</strong>, an email pseudonymity service operated under the Virebent Art privacy infrastructure.
-nymserv-ng bridges historical remailer workflows with modern post-quantum cryptography. It accepts both legacy OpenPGP messages (100% compatible with <code>crooks/ghionym</code>) and Next-Generation post-quantum envelopes (ML-KEM-768 + X25519) delivered through the YAMN remailer network.
+Un <strong>nymserver</strong> (pseudonym server) è un'infrastruttura di posta elettronica che consente di possedere un'identità pseudonima <strong>persistente e bidirezionale</strong>:
 </p>
-
-<p class="nav-item"><a href="gemini://nymserv-ng.virebent.art/">Native Gemini capsule (gemini://nymserv-ng.virebent.art)</a></p>
-<p class="nav-item"><a href="/index.gmi">Raw Gemtext source (/index.gmi)</a></p>
-
-<hr>
-
-<h3>What is a Nymserver?</h3>
-<p>A nymserver provides you with a persistent, two-way anonymous email address:</p>
 <ul>
-  <li>Your address: <code>&lt;alias&gt;@nymserv-ng.virebent.art</code></li>
-  <li>You can send email to any clearnet recipient worldwide.</li>
-  <li>Anyone on the internet can send email to your alias.</li>
-  <li>Inbound email is encrypted to your public key and delivered back to you anonymously via the remailer mixnet (Reply-Block / YAMN).</li>
-  <li>The nymserver never knows your IP address, physical location, or real identity.</li>
+  <li><strong>Un indirizzo pubblico permanente</strong>: il tuo pseudonimo è del tipo <code>&lt;alias&gt;@nymserv-ng.virebent.art</code>.</li>
+  <li><strong>Invio e ricezione</strong>: puoi inviare email a qualsiasi casella di posta ordinaria (clearnet) in tutto il mondo, e chiunque può risponderti al tuo indirizzo alias.</li>
+  <li><strong>Zero conoscenza dell'identità reale</strong>: a differenza dei comuni servizi di webmail, il nymserver <strong>non sa chi sei, dove ti trovi né da quale indirizzo IP ti colleghi</strong>.</li>
+  <li><strong>Inoltro crittografico a senso unico</strong>: quando riceve una mail per il tuo alias, il nymserver la cifra con la tua chiave pubblica e la instrada attraverso la rete dei remailer (Reply-Block / YAMN) verso la tua reale destinazione, senza che il server conosca la tua identità.</li>
 </ul>
 
 <hr>
 
-<h3>1. Legacy Protocol (crooks/ghionym compatible)</h3>
-<p>If you use manual CLI scripts, GnuPG, and Mixmaster reply blocks, nymserv-ng works right out of the box with zero changes to your existing workflow.</p>
+<h3>Il nostro servizio: nymserv-ng</h3>
+<p>
+<strong>nymserv-ng</strong> è una nuova implementazione del servizio di pseudonimi sviluppata interamente in <strong>Rust</strong> (ad alta affidabilità, con isolamento della memoria volatile <code>mlock</code> e <code>zeroize</code>), progettata specificamente per la rete anonima di remailer <strong>YAMN</strong>.
+</p>
+<p>
+Il servizio opera in modalità <strong>Dual-Stack</strong> per unire la massima retrocompatibilità storica alle tecnologie crittografiche d'avanguardia:
+</p>
 
-<h4>How to Register an Alias (Config)</h4>
-<p>Compose a plain text file, encrypt it with GnuPG for the nymserver public key, and send it via YAMN to:<br>
-<code>config@nymserv-ng.virebent.art</code></p>
-
-<pre>Config:
-From: youralias@nymserv-ng.virebent.art
-Public-Key:
------BEGIN PGP PUBLIC KEY BLOCK-----
-... your public key here ...
------END PGP PUBLIC KEY BLOCK-----
-Reply-Block:
-::
-Anon-To: your_mailbox@example.org
-... Mixmaster / Remailer chain ...
-
-Nym-Commands: +cryptrecv +acksend +sigsend</pre>
-
-<h4>Supported Account Flags</h4>
 <ul>
-  <li><code>+cryptrecv</code>: Encrypt incoming clearnet mail with your public key before delivery (default enabled, strongly recommended).</li>
-  <li><code>+sigsend</code>: Require a valid PGP digital signature on all outgoing messages sent through your alias.</li>
-  <li><code>+acksend</code>: Send an encrypted receipt back to your reply block when an outgoing mail is dispatched.</li>
-  <li><code>+fixedsz</code>: Pad messages to fixed size units to frustrate packet length analysis.</li>
-</ul>
-
-<h4>How to Send Mail as Your Alias</h4>
-<p>Compose your message, sign it with your private PGP key, encrypt for the nymserver key, and send via YAMN to:<br>
-<code>send@nymserv-ng.virebent.art</code></p>
-
-<pre>From: youralias@nymserv-ng.virebent.art
-To: recipient@destination.org
-Subject: Hello from the mixnet
-
-This message was dispatched through nymserv-ng.</pre>
-
-<hr>
-
-<h3>2. Next-Generation Protocol (Post-Quantum NG)</h3>
-<p>While the legacy protocol remains fully supported, OpenPGP and static RSA/ECC keys lack Forward Secrecy and are vulnerable to future quantum cryptanalysis (Shor's algorithm). nymserv-ng NG solves this:</p>
-<ul>
-  <li><strong>Hybrid Post-Quantum KEM</strong>: NIST FIPS 203 ML-KEM-768 combined with X25519.</li>
-  <li><strong>Perfect Forward Secrecy (PFS)</strong>: Ephemeral keys generated per message. Past traffic cannot be retroactively decrypted (Harvest Now, Decrypt Later immune).</li>
-  <li><strong>Authenticated AEAD</strong>: ChaCha20-Poly1305 with zero ciphertext malleability.</li>
-  <li><strong>Kernel Memory Hygiene</strong>: Master keys locked in physical RAM (<code>mlock</code>) with guard pages and deterministic memory wiping on drop.</li>
+  <li>
+    <strong>1. Versione Legacy (OpenPGP / GnuPG)</strong>:
+    Garantisce il 100% di compatibilità a livello di bit con lo standard storico <code>crooks/ghionym</code> (<code>nymserver.pl</code>). Se possiedi già script, chiavi PGP e flussi di lavoro con Mixmaster o YAMN, puoi registrarti e operare subito senza alcuna modifica al tuo client.
+    <br>
+    <a href="/legacy.html"><strong>=&gt; Leggi la Guida Completa al Canale Legacy (OpenPGP)</strong></a>
+  </li>
+  <li style="margin-top: 1rem;">
+    <strong>2. Versione Moderna (Post-Quantum NG)</strong>:
+    Risolve le vulnerabilità storiche di OpenPGP (assenza di Forward Secrecy, staticità delle chiavi e vulnerabilità agli attacchi quantistici <em>Harvest Now, Decrypt Later</em>). Utilizza il nuovo standard <strong>NIST FIPS 203 ML-KEM-768</strong> combinato con chiavi effimere X25519 e cifratura AEAD ChaCha20-Poly1305.
+    È accompagnata dal client standalone in puro Rust <strong>pqpg</strong> (Post-Quantum Privacy Guard) con supporto QR Code per macchine Air-Gapped.
+    <br>
+    <a href="/modern.html"><strong>=&gt; Leggi la Guida Completa al Canale Post-Quantum e pqpg</strong></a>
+  </li>
 </ul>
 
 <hr>
-
-<h3>Server Public Keys</h3>
-<p>Download our official keys before encrypting your requests:</p>
-<p class="nav-item"><a href="/nymserver-openpgp.asc">Server OpenPGP Public Key (Legacy Channel)</a></p>
-<p class="nav-item"><a href="/nymserver-pq-pubkey.bin">Server ML-KEM-768 Public Key (NG Channel)</a></p>
-
-<p>OpenPGP Fingerprint:<br>
-<code>C5D1 1FC6 DD91 5E45 CE82  4B6E D455 E394 E202 E5CC</code></p>
-<p>OpenPGP Long Key ID:<br>
-<code>D455E394E202E5CC</code></p>
-<p>ML-KEM-768 Public Key SHA256:<br>
-<code>12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4</code></p>
-
-<hr>
-
-<h3>3. Client Tool: pqpg (Post-Quantum Privacy Guard)</h3>
-<p>
-For users operating on the modern post-quantum channel, we provide <strong>pqpg</strong>, a standalone, lightweight cryptographic CLI utility <strong>written in pure Rust</strong> (memory-safe, zero external C dependencies, deterministic <code>zeroize</code> memory hygiene):
-</p>
-
-<h4>Quick Download (Linux x86_64 Standalone Binary, 1.2 MB)</h4>
-<pre>curl -sSL https://nymserv-ng.virebent.art/bin/pqpg-linux-amd64 -o ~/bin/pqpg
-chmod +x ~/bin/pqpg</pre>
-
-<p>SHA256 Checksum:<br>
-<code>fc1eabc6ec800b494545f558f520ec3493741977664d960cb2e7be75ea46e415</code></p>
-
-<h4>Multi-Platform Releases (macOS Apple Silicon/Intel, Windows .exe)</h4>
-<p>
-Precompiled standalone binaries for macOS (Apple Silicon M1-M4 &amp; Intel) and Windows (<code>pqpg-windows-amd64.exe</code>) are available at:<br>
-<a href="https://github.com/gabrix73/pqpg/releases">github.com/gabrix73/pqpg/releases</a>
-</p>
-
-<h4>Step-by-Step Usage Guide</h4>
-
-<p><strong>1. Generate your post-quantum keypair:</strong></p>
-<pre>pqpg keygen -n myidentity --qr</pre>
-<p>This generates <code>myidentity.key</code> (private key, mode 0600) and <code>myidentity.pub</code> (public key), and displays an Air-Gapped QR code directly on your terminal.</p>
-
-<p><strong>2. Encrypt a file or message for a recipient:</strong></p>
-<pre>pqpg encrypt -r recipient.pub document.txt -o document.msg</pre>
-<p>Or pipe text directly from standard input:</p>
-<pre>echo "Hello from the mixnet" | pqpg encrypt -r recipient.pub -o secret.msg</pre>
-
-<p><strong>3. Decrypt an incoming message:</strong></p>
-<pre>pqpg decrypt -s myidentity.key document.msg</pre>
-
-<p><strong>4. Digitally sign and verify documents:</strong></p>
-<pre># Sign a document (creates detached 64-byte Ed25519 signature)
-pqpg sign -s myidentity.key document.pdf -o document.sig
-
-# Verify the signature against the author's public key
-pqpg verify -k author.pub -s document.sig document.pdf</pre>
-
-<p><strong>5. Air-Gapped Terminal QR Display:</strong></p>
-<pre>pqpg qr myidentity.pub</pre>
-<p>Renders any key, signature or ciphertext into a high-density UTF-8 block QR code for instant offline scanning with a smartphone or webcam.</p>
 
 <div class="footer">
-  <p>Discussion &amp; Community: join us on Usenet newsgroups <strong>alt.privacy.anon-server</strong> and <strong>alt.cypherpunks</strong>.<br>
-  Maintainer: <strong>Gabx</strong> &bull; Source code: <a href="https://github.com/gabrix73/nymserv-ng">github.com/gabrix73/nymserv-ng</a> &bull; AGPL-3.0</p>
+  <p>Discussione &amp; Comunità: unisciti a noi sui newsgroup Usenet <strong>alt.privacy.anon-server</strong> e <strong>alt.cypherpunks</strong>.<br>
+  Maintainer: <strong>Gabx</strong> &bull; Codice sorgente: <a href="https://github.com/gabrix73/nymserv-ng">github.com/gabrix73/nymserv-ng</a> &bull; AGPL-3.0</p>
 </div>
 
 </body>
