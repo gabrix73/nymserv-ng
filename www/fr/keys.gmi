@@ -36,7 +36,7 @@ Identité : nymserv-ng pseudonym server <config@nymserv-ng.virebent.art>
 
 Utilisée pour l'encapsulation cryptographique post-quantique.
 
-=> /nymserver-pq-pubkey.asc Télécharger la Clé Texte ASCII Armor (nymserver-pq-pubkey.asc)
+=> /nymserver-pq-pubkey.asc Télécharger nymserver-pq-pubkey.asc (SHA256: 277df4d834cb0cbd6d4e1d3e4be3b50beb10d6b59059240a4b11c225108d89a3)
 => /nymserver-pq-pubkey.bin Télécharger la Clé Brute Binaire (nymserver-pq-pubkey.bin - 1 184 octets)
 => /bin/pqpg-linux-amd64 Télécharger le Client Standalone pqpg
 

@@ -36,7 +36,7 @@ User ID: nymserv-ng pseudonym server <config@nymserv-ng.virebent.art>
 
 Used for quantum-resistant lattice encapsulation (immune to Harvest Now, Decrypt Later attacks).
 
-=> /nymserver-pq-pubkey.asc Download ASCII Armor Text Key (nymserver-pq-pubkey.asc)
+=> /nymserver-pq-pubkey.asc Download nymserver-pq-pubkey.asc (SHA256: 277df4d834cb0cbd6d4e1d3e4be3b50beb10d6b59059240a4b11c225108d89a3)
 => /nymserver-pq-pubkey.bin Download Raw Binary Key (nymserver-pq-pubkey.bin - 1184 bytes)
 => /bin/pqpg-linux-amd64 Download Standalone CLI Client pqpg
 

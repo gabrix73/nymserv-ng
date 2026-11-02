@@ -76,7 +76,7 @@ pqpg qr tout_fichier.txt
 ### Clé Post-Quantique du Serveur
 
 Téléchargez la clé publique ML-KEM-768 officielle :
-=> /nymserver-pq-pubkey.asc Télécharger nymserver-pq-pubkey.asc (Format texte ASCII Armor pour pqpg)
+=> /nymserver-pq-pubkey.asc Télécharger nymserver-pq-pubkey.asc (SHA256: 277df4d834cb0cbd6d4e1d3e4be3b50beb10d6b59059240a4b11c225108d89a3)
 SHA256 : 277df4d834cb0cbd6d4e1d3e4be3b50beb10d6b59059240a4b11c225108d89a3
 
 => /nymserver-pq-pubkey.bin Télécharger nymserver-pq-pubkey.bin (Binaire brut 1184 octets pour bibliothèques C/Rust)

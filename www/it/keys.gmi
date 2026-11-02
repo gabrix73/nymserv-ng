@@ -36,7 +36,7 @@ User ID: nymserv-ng pseudonym server <config@nymserv-ng.virebent.art>
 
 Utilizzata per l'incapsulamento crittografico resistente ai futuri computer quantistici.
 
-=> /nymserver-pq-pubkey.asc Download Chiave Testo ASCII Armor (nymserver-pq-pubkey.asc)
+=> /nymserver-pq-pubkey.asc Download nymserver-pq-pubkey.asc (SHA256: 277df4d834cb0cbd6d4e1d3e4be3b50beb10d6b59059240a4b11c225108d89a3)
 => /nymserver-pq-pubkey.bin Download Chiave Grezza Binaria (nymserver-pq-pubkey.bin - 1184 byte)
 => /bin/pqpg-linux-amd64 Download Client Standalone pqpg
 
