@@ -2,10 +2,11 @@ use clap::{Parser, Subcommand};
 use std::fs;
 use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use tracing::info;
 
 use nymserv_ng::crypto::pq::generate_kem_keypair;
+use nymserv_ng::store::NymStore;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about = "nymserv-ng Administrative CLI")]
@@ -26,6 +27,8 @@ enum Commands {
     /// Inspect alias status in local database
     Inspect {
         alias: String,
+        #[arg(short, long, default_value = "/var/lib/nymserv/data/nymserv.redb")]
+        db: PathBuf,
     },
 }
 
@@ -56,8 +59,33 @@ fn main() -> anyhow::Result<()> {
             println!("ML-KEM-768 public key saved to:  {}", pub_path.display());
             println!("Public key SHA256: {}", sha256_hex(&pub_key));
         }
-        Commands::Inspect { alias } => {
-            info!("Inspecting alias {}", alias);
+        Commands::Inspect { alias, db } => {
+            info!("Inspecting alias '{}' in database {:?}", alias, db);
+            if !db.exists() {
+                anyhow::bail!("Database file does not exist at {:?}", db);
+            }
+            let store = NymStore::open(&db)?;
+            match store.get_alias(&alias)? {
+                Some(record) => {
+                    println!("Alias:            {}", record.alias);
+                    println!("Created at:       {}", record.created_at);
+                    println!("Last active:      {}", record.last_active_at);
+                    println!("Flags:            0x{:04x}", record.flags);
+                    println!("Reply Blocks:     {}", record.reply_blocks.len());
+                    for (i, rb) in record.reply_blocks.iter().enumerate() {
+                        let lines: Vec<&str> = rb.lines().collect();
+                        println!("  [#{}] {} lines (first line: '{}')", i + 1, lines.len(), lines.first().unwrap_or(&""));
+                    }
+                    if let Some(ref pubkey) = record.public_key_armor {
+                        println!("Public Key:       Present ({} bytes)", pubkey.len());
+                    } else {
+                        println!("Public Key:       None");
+                    }
+                }
+                None => {
+                    println!("Alias '{}' was NOT found in database.", alias);
+                }
+            }
         }
     }
     Ok(())

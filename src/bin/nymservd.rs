@@ -5,8 +5,6 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use tracing::info;
 
-use nymserv_ng::config::Config;
-
 #[derive(Parser, Debug)]
 #[command(author, version, about = "nymserv-ng Daemon: pool mixing, queue dispatch and remailer backend")]
 struct Args {
@@ -37,13 +35,9 @@ fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn ctrlc_handler<F>(f: F)
+fn ctrlc_handler<F>(_f: F)
 where
     F: FnOnce() + Send + 'static,
 {
     // Minimal standard signal handling
-    let mut f = Some(f);
-    let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(move || {
-        // Register signal handler if needed or rely on loop check
-    }));
 }

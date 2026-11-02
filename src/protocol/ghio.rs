@@ -121,18 +121,13 @@ pub struct SendRequest {
 pub fn parse_config_message(content: &str, hostname: &str) -> Result<ConfigRequest, GhioError> {
     let mut lines = content.lines();
     
-    // Look for Config:
+    // Look for Config: anywhere in the message lines
     let mut found_config = false;
     for line in &mut lines {
         let trimmed = line.trim();
-        if trimmed.is_empty() {
-            continue;
-        }
         if trimmed.eq_ignore_ascii_case("Config:") {
             found_config = true;
             break;
-        } else {
-            return Err(GhioError::NotConfigMessage);
         }
     }
     if !found_config {
