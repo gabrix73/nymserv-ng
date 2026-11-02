@@ -75,7 +75,8 @@ pqpg qr qualsiasi_file.txt
 
 ### Chiave Post-Quantum del Server
 
-=> /nymserver-pq-pubkey.bin Scarica nymserver-pq-pubkey.bin (1184 byte)
+=> /nymserver-pq-pubkey.asc Scarica nymserver-pq-pubkey.asc (Testo ASCII Armor per pqpg)
+SHA256: 277df4d834cb0cbd6d4e1d3e4be3b50beb10d6b59059240a4b11c225108d89a3
 
-SHA256:
-12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4
+=> /nymserver-pq-pubkey.bin Scarica nymserver-pq-pubkey.bin (Raw binario 1184 byte per librerie C/Rust)
+SHA256: 12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4

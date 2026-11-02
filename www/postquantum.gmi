@@ -76,7 +76,8 @@ pqpg qr any_file.txt
 ### Server Post-Quantum Public Key
 
 Download the official server ML-KEM-768 public key:
-=> /nymserver-pq-pubkey.bin Download nymserver-pq-pubkey.bin (1184 bytes)
+=> /nymserver-pq-pubkey.asc Download nymserver-pq-pubkey.asc (ASCII Armor text format for pqpg)
+SHA256: 277df4d834cb0cbd6d4e1d3e4be3b50beb10d6b59059240a4b11c225108d89a3
 
-SHA256:
-12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4
+=> /nymserver-pq-pubkey.bin Download nymserver-pq-pubkey.bin (Raw 1184-byte binary for C/Rust libraries)
+SHA256: 12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4

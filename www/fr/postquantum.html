@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Canal Post-Quantique (ML-KEM) &bull; 2 novembre</title>
+<title>Canal Post-Quantique (ML-KEM / pqpg) &bull; 2 novembre</title>
 <style>
   body {
     background: #141414;
@@ -75,120 +75,150 @@
 </head>
 <body>
 
-<div class="lang-bar" aria-label="Sélection de langue">
-  Langue: <a href="/postquantum.html">EN (English)</a> | <a href="/it/postquantum.html">IT (Italiano)</a> | <span class="current-lang">FR (Français)</span>
+<div class="lang-bar" aria-label="Sélection de la langue">
+  Langue : <a href="/postquantum.html">EN (English)</a> | <a href="/it/postquantum.html">IT (Italiano)</a> | <span class="current-lang">FR (Français)</span>
 </div>
 
 <h1><svg class="skull-icon" viewBox="0 0 24 24" width="22" height="22" fill="#ffffff" style="vertical-align: -2px; margin-right: 0.35rem;" aria-hidden="true"><path d="M12 2C7.58 2 4 5.58 4 10c0 2.5 1.15 4.73 2.95 6.22.18.15.29.38.29.62V19c0 .55.45 1 1 1h1.5c.28 0 .5-.22.5-.5v-1c0-.28.22-.5.5-.5s.5.22.5.5v1c0 .28.22.5.5.5h1c.28 0 .5-.22.5-.5v-1c0-.28.22-.5.5-.5s.5.22.5.5v1c0 .28.22.5.5.5H16c.55 0 1-.45 1-1v-2.16c0-.24.11-.47.29-.62C19.09 14.53 20 12.38 20 10c0-4.42-3.58-8-8-8zm-3.5 10c-.83 0-1.5-.67-1.5-1.5S7.67 9 8.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm7 0c-.83 0-1.5-.67-1.5-1.5S14.67 9 15.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM12 14c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg><span class="brand-title">2 novembre</span></h1>
-<h2>Guide du Canal Post-Quantique &bull; NIST FIPS 203 ML-KEM-768</h2>
+<h2>Guide du Canal Post-Quantique &bull; NIST FIPS 203 ML-KEM-768 &amp; pqpg</h2>
 
-<nav class="menu" aria-label="Navigation principale">
+<nav class="menu" aria-label="Navigation Principale">
   <ul>
-    <li><a href="/fr/index.html">Accueil (Vue d'ensemble et Sécurité)</a></li>
-    <li><a href="/fr/legacy.html">Guide Canal Classique (OpenPGP / GnuPG / Ghionym)</a></li>
+    <li><a href="/fr/index.html">Accueil (Vue d'ensemble et Commandes Email)</a></li>
+    <li><a href="/fr/legacy.html">Guide Canal Hérité (OpenPGP / GnuPG)</a></li>
     <li><a href="/fr/postquantum.html" class="active-nav">Guide Canal Post-Quantique (NIST ML-KEM / pqpg)</a></li>
     <li><a href="/fr/keys.html">Clés Publiques du Serveur &amp; Empreintes</a></li>
-    <li><a href="/fr/postquantum.gmi">Variante Gemtext (/fr/postquantum.gmi)</a></li>
+    <li><a href="/fr/postquantum.gmi">Version Gemtext (/fr/postquantum.gmi)</a></li>
   </ul>
 </nav>
 
 <p>
-Le canal Post-Quantique de <strong>nymserv-ng</strong> immunise les identités pseudonymes contre les attaques futures par ordinateurs quantiques (algorithme de Shor et interceptions massives <em>Harvest Now, Decrypt Later</em>).
+Le canal Post-Quantique de <strong>nymserv-ng</strong> élimine les vulnérabilités historiques des algorithmes à clé publique classiques (RSA et Courbes Elliptiques) face aux ordinateurs quantiques et aux attaques de surveillance passive <em>Harvest Now, Decrypt Later</em>.
 </p>
 
 <div class="callout">
-  <div class="callout-title">Pourquoi le Post-Quantique pour Débutants ?</div>
-  Les e-mails chiffrés aujourd'hui avec RSA/PGP peuvent être interceptés et stockés pour être déchiffrés dans quelques années par des calculateurs quantiques.<br>
-  Le canal Post-Quantique protège vos pseudonymes avec le standard officiel <strong>NIST FIPS 203 (ML-KEM-768 / Kyber)</strong>, assurant une confidentialité inviolable dans le temps.
+  <div class="callout-title">Pourquoi le Format Texte ASCII Armored (pqpg) et Non le Binaire Brut ?</div>
+  Les fichiers binaires bruts (<code>.bin</code>) sont réservés aux développeurs cryptographiques intégrant des bibliothèques C ou Rust à bas niveau.<br>
+  Pour les utilisateurs et les échanges d'emails, <strong>nymserv-ng</strong> supporte nativement le standard <strong>pqpg</strong> en texte lisible (ASCII Armor avec en-têtes <code>-----BEGIN PQPG PUBLIC KEY-----</code> et <code>-----BEGIN PQPG MESSAGE-----</code>). C'est aussi simple qu'OpenPGP, mais avec un chiffrement hybride post-quantique inviolable.
 </div>
 
 <hr>
 
-<h3>1. Comment Obtenir la Clé Publique Post-Quantique du Serveur</h3>
+<h3>1. Obtenir la Clé Publique Post-Quantique du Serveur</h3>
 <p>
-Téléchargez la clé publique d'encapsulation ML-KEM-768 via le web ou demandez-la par e-mail :
+Vous pouvez télécharger la clé publique au format texte directement sur le web ou la recevoir par email :
 </p>
 <ul>
-  <li><strong>Via le Web</strong> : <a href="/nymserver-pq-pubkey.bin"><strong>=&gt; Télécharger nymserver-pq-pubkey.bin (1 184 octets bruts)</strong></a></li>
-  <li><strong>Via E-mail</strong> : Envoyez un courriel à <code>key@nymserv-ng.virebent.art</code>. Le moteur automatique répondra avec la clé OpenPGP et la clé ML-KEM-768 encodée en hexadécimal.</li>
+  <li><strong>Téléchargement Web Officiel</strong> : <a href="/nymserver-pq-pubkey.asc"><strong>=&gt; Télécharger nymserver-pq-pubkey.asc (Format Texte ASCII Armor)</strong></a></li>
+  <li><strong>Par Email Automatique</strong> : Envoyez un email vide à <code>key@nymserv-ng.virebent.art</code>. Le serveur répondra immédiatement avec le bloc complet <code>BEGIN PQPG PUBLIC KEY</code>.</li>
   <li><strong>Empreinte SHA256</strong> :<br>
-    <code>74c8ebca73fa8e7b9dd6329fc2f99580ef14cebb80ee7b3547fb0be550b7194f</code>
+    <code>277df4d834cb0cbd6d4e1d3e4be3b50beb10d6b59059240a4b11c225108d89a3</code>
   </li>
+  <li><em>Note pour développeurs</em> : La clé brute binaire de 1 184 octets pour les bibliothèques C/Rust est disponible sur <a href="/nymserver-pq-pubkey.bin">/nymserver-pq-pubkey.bin</a> (SHA256 : <code>12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4</code>).</li>
 </ul>
 
 <hr>
 
-<h3>2. Guide Pas à Pas pour Débutants : Création de votre Alias Post-Quantique</h3>
+<h3>2. Guide Pas à Pas pour Débutants : Créer Votre Nym Post-Quantique</h3>
 
-<h4>Étape 1 : Générez votre paire de clés ML-KEM-768</h4>
+<h4>Étape 1 : Obtenir l'outil pqpg</h4>
 <p>
-Utilisez l'utilitaire en ligne de commande <code>nymserv-ctl</code> (disponible dans les releases GitHub) ou une bibliothèque FIPS 203 :
+Téléchargez le binaire autonome pour Linux x86_64, ou installez-le avec Cargo :
 </p>
-<pre><code># Génération de la paire de clés avec nymserv-ctl
-nymserv-ctl gen-keys --pq-only --out-dir ~/.nymserv-keys</code></pre>
+<pre><code># Téléchargement du binaire Linux x86_64
+curl -sO https://nymserv-ng.virebent.art/bin/pqpg-linux-amd64
+chmod +x pqpg-linux-amd64
+sudo mv pqpg-linux-amd64 /usr/local/bin/pqpg
+
+# Ou installation depuis les sources Rust/Cargo
+cargo install pqpg</code></pre>
+
+<h4>Étape 2 : Générer votre paire de clés Post-Quantiques</h4>
+<pre><code>mkdir -p ~/Nym-pq && cd ~/Nym-pq
+pqpg keygen</code></pre>
 <p>
-Cela produit deux fichiers :
+Cette commande crée deux fichiers texte :
 <ul>
-  <li><code>user-pq-pubkey.bin</code> (Clé publique d'encapsulation de 1 184 octets).</li>
-  <li><code>user-pq-secret.bin</code> (Clé privée de décapsulation, à garder strictement secrète).</li>
+  <li><code>identity.pub</code> (Votre clé publique : encapsulation ML-KEM-768, échange X25519 et signature Ed25519).</li>
+  <li><code>identity.key</code> (Votre clé privée secrète : conservez-la précieusement et ne la partagez jamais !).</li>
 </ul>
 </p>
 
-<h4>Étape 2 : Préparez le fichier de configuration Config</h4>
+<h4>Étape 3 : Télécharger la clé publique du serveur</h4>
+<pre><code>curl -sO https://nymserv-ng.virebent.art/nymserver-pq-pubkey.asc</code></pre>
+
+<h4>Étape 4 : Préparer le fichier de configuration config.txt</h4>
 <p>
-Rédigez le fichier texte <code>config-pq.txt</code> en insérant votre clé publique en hexadécimal et votre Reply-Block :
+Créez un fichier texte nommé <code>config.txt</code> avec votre bloc <code>Public-Key:</code> (le contenu complet de <code>identity.pub</code>) et votre <code>Reply-Block:</code> :
 </p>
 
 <pre><code>Config:
-From: votrealias-pq@nymserv-ng.virebent.art
-PQ-Algorithm: ML-KEM-768
-Public-Key-Hex:
-[COLLEZ ICI LA CHAINE HEXADECIMALE DE user-pq-pubkey.bin]
+From: votrealias@nymserv-ng.virebent.art
+Public-Key:
+-----BEGIN PQPG PUBLIC KEY-----
+MCowBQYDK2VwAyEAX55L6Y57jT7J14e7aXF/zP3wD4gS12vYw6t9rP9oQkE=
+... (collez ici le contenu complet de identity.pub) ...
+-----END PQPG PUBLIC KEY-----
 Reply-Block:
 ::
-Anon-To: votre_vraie_adresse@fournisseur-securise.org
+Anon-To: votre_vrai_email@fournisseur-securise.org
 
 Nym-Commands: +cryptrecv +pqsend</code></pre>
 
-<h4>Étape 3 : Encapsulez et Chiffrez pour le Serveur</h4>
+<h4>Étape 5 : Chiffrer le paquet d'inscription avec pqpg</h4>
 <p>
-Encapsulez un secret partagé de 32 octets avec la clé publique du serveur et chiffrez le contenu avec ChaCha20-Poly1305 :
+Chiffrez le fichier <code>config.txt</code> avec la clé publique du serveur :
 </p>
-<pre><code>nymserv-ctl pq-encrypt --recipient-key nymserver-pq-pubkey.bin config-pq.txt &gt; config-pq.bin.asc</code></pre>
+<pre><code>pqpg encrypt --recipient-key nymserver-pq-pubkey.asc config.txt &gt; config.asc</code></pre>
 
-<h4>Étape 4 : Envoyez la configuration à config@</h4>
-<p>Envoyez le résultat à :</p>
+<h4>Étape 6 : Envoyer la demande à config@</h4>
+<p>Envoyez un email contenant le bloc <code>config.asc</code> à :</p>
 <pre><code>config@nymserv-ng.virebent.art</code></pre>
-<p>Le serveur enregistre l'alias dans la base de données <code>redb</code> et expédie une confirmation post-quantique à votre Reply-Block.</p>
+<p>
+Le serveur déchiffre la charge utile avec sa clé maîtresse ML-KEM, enregistre votre alias dans la base ACID <code>redb</code> et vous envoie une confirmation chiffrée.
+</p>
 
 <hr>
 
-<h3>3. Réception de Courriels Post-Quantiques (Entrant)</h3>
+<h3>3. Réception des Messages Post-Quantiques (Inbound)</h3>
 <p>
-Lorsque quelqu'un écrit à <code>votrealias-pq@nymserv-ng.virebent.art</code> :
+Lorsque quelqu'un écrit à <code>votrealias@nymserv-ng.virebent.art</code> :
 </p>
 <ol>
-  <li>Le serveur génère une clé éphémère ML-KEM-768 encapsulée avec votre clé publique.</li>
-  <li>Le corps du message est chiffré avec ChaCha20-Poly1305.</li>
-  <li>Le paquet chiffré est transmis à votre Reply-Block.</li>
-  <li>Sur votre machine, décapsulez le secret avec <code>user-pq-secret.bin</code> et lisez le message instantanément.</li>
+  <li>Le serveur chiffre l'email à la volée avec votre clé publique Post-Quantique (ML-KEM-768 + ChaCha20-Poly1305).</li>
+  <li>Le message chiffré <code>-----BEGIN PQPG MESSAGE-----</code> est remis à votre Reply-Block.</li>
+  <li>Pour lire le message reçu, enregistrez-le (par ex. <code>message.eml</code>) et déchiffrez-le avec votre clé secrète :
+<pre><code>pqpg decrypt --key identity.key message.eml</code></pre>
+  </li>
 </ol>
 
 <hr>
 
-<h3>4. Envoi de Courriels Sécurisés (Sortant via send@)</h3>
+<h3>4. Envoi d'Emails Anonymes (Outbound via send@)</h3>
 <p>
-Pour expédier un e-mail avec votre alias PQ en expéditeur :
+Pour envoyer des emails vers l'Internet public depuis votre alias :
 </p>
 <ol>
-  <li>Signez le message avec votre clé Ed25519 ou ML-DSA.</li>
-  <li>Encapsulez et chiffrez pour la clé ML-KEM du serveur.</li>
-  <li>Envoyez le paquet à <code>send@nymserv-ng.virebent.art</code>.</li>
-  <li>Le serveur valide la signature, applique l'avertissement et achemine le message à destination.</li>
+  <li>Préparez le fichier <code>envoi.txt</code> :
+<pre><code>::
+Anon-To: destinataire@example.com
+Subject: Message sécurisé post-quantique
+
+Corps de votre message anonyme...</code></pre>
+  </li>
+  <li>Signez le fichier avec votre clé privée :
+<pre><code>pqpg sign --key identity.key envoi.txt &gt; envoi.signed</code></pre>
+  </li>
+  <li>Chiffrez le fichier signé pour le serveur :
+<pre><code>pqpg encrypt --recipient-key nymserver-pq-pubkey.asc envoi.signed &gt; envoi.asc</code></pre>
+  </li>
+  <li>Envoyez le résultat à :
+<pre><code>send@nymserv-ng.virebent.art</code></pre>
+  </li>
 </ol>
 
 <div class="footer">
-  &copy; 2026 virebent.art &bull; Projet 2 novembre &bull; Moteur nymserv-ng v0.2.0 (Pure Rust AGPL-3.0)
+  &copy; 2026 virebent.art &bull; Projet 2 novembre &bull; Engine nymserv-ng v0.2.0 (Pure Rust AGPL-3.0)
 </div>
 
 </body>
