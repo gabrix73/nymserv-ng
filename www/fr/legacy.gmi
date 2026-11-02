@@ -1,0 +1,72 @@
+# 2 novembre
+## Guide du Protocole Historique • OpenPGP / GnuPG / Ghionym
+
+Langue : => /legacy.gmi EN (English) | => /it/legacy.gmi IT (Italiano) | FR (Français)
+
+=> /fr/index.gmi Accueil (Présentation & Sécurité)
+=> /fr/legacy.gmi Guide Canal Historique (OpenPGP / GnuPG / Ghionym)
+=> /fr/postquantum.gmi Guide Canal Post-Quantique (NIST ML-KEM / pqpg)
+=> /fr/keys.gmi Clés Publiques du Serveur & Empreintes
+
+---
+
+Le canal historique de nymserv-ng assure une compatibilité binaire à 100% avec la norme historique crooks/ghionym (nymserver.pl).
+Si vous utilisez des scripts existants, GnuPG (gpg), Mixmaster ou des outils YAMN, vous pouvez enregistrer et gérer votre alias sans modifier votre configuration logicielle.
+
+---
+
+### 1. Enregistrement d'un Alias (Config)
+
+Composez un fichier texte contenant le bloc Config:, chiffrez-le avec la clé publique OpenPGP du serveur (Key ID : D455E394E202E5CC), et expédiez-le à :
+config@nymserv-ng.virebent.art
+
+Format de la requête :
+```
+Config:
+From: youralias@nymserv-ng.virebent.art
+Public-Key:
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+... votre bloc de clé publique PGP ...
+-----END PGP PUBLIC KEY BLOCK-----
+Reply-Block:
+::
+Anon-To: your_real_mailbox@destination.org
+... chaîne de routage en oignon Mixmaster / Remailers ...
+
+Nym-Commands: +cryptrecv +acksend +sigsend
+```
+
+#### Drapeaux de Configuration Pris en Charge
+* +cryptrecv : Chiffre tous les courriels entrants depuis le clearnet avec votre clé publique avant livraison (vivement recommandé).
+* +sigsend : Exige une signature numérique PGP valide pour tout message sortant émis sous votre nom d'alias.
+* +acksend : Envoie un accusé de réception chiffré à votre Reply-Block lors de chaque envoi effectué.
+* +fixedsz : Remplit les messages à taille fixe pour contrer les attaques par analyse de longueur de paquets.
+
+---
+
+### 2. Envoyer un E-mail via Votre Alias (Send)
+
+Pour expédier un courriel vers le clearnet au nom de votre alias pseudonyme, composez le message, signez-le avec votre clé privée PGP, chiffrez-le pour la clé publique du serveur et envoyez-le à :
+send@nymserv-ng.virebent.art
+
+Format du message déchiffré :
+```
+From: youralias@nymserv-ng.virebent.art
+To: recipient@any-provider.org
+Subject: Salutations depuis le réseau d'anonymat
+
+Ce message a été routé et délivré anonymement via nymserv-ng.
+```
+
+---
+
+### 3. Clé OpenPGP du Serveur
+
+Téléchargez la clé publique OpenPGP avant d'émettre vos requêtes de configuration :
+=> /nymserver-openpgp.asc Télécharger nymserver-openpgp.asc
+
+Empreinte (Fingerprint) :
+C5D1 1FC6 DD91 5E45 CE82  4B6E D455 E394 E202 E5CC
+
+Identifiant de clé (Key ID) :
+D455E394E202E5CC

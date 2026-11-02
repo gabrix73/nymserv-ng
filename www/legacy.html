@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Canale Legacy (OpenPGP) &bull; 2 novembre</title>
+<title>Legacy Channel (OpenPGP) &bull; 2 novembre</title>
 <style>
   body {
     background: #141414;
@@ -21,6 +21,16 @@
   h4 { font-size: 0.95rem; color: #cfcfcf; margin-bottom: 0.3rem; }
   a { color: #72a9ff; text-decoration: none; }
   a:hover { text-decoration: underline; }
+  .lang-bar {
+    text-align: right;
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #262626;
+  }
+  .lang-bar a { margin-left: 0.4rem; padding: 0.1rem 0.3rem; }
+  .lang-bar .current-lang { color: #ffffff; font-weight: bold; background: #262626; border-radius: 3px; }
   .menu {
     background: #1a1a1a;
     border: 1px solid #333;
@@ -49,29 +59,33 @@
 </head>
 <body>
 
-<h1>2 novembre</h1>
-<h2>Guida al Protocollo Legacy &bull; OpenPGP / GnuPG / Ghionym</h2>
+<div class="lang-bar" aria-label="Language selection">
+  Language: <span class="current-lang">EN (English)</span> | <a href="/it/legacy.html">IT (Italiano)</a> | <a href="/fr/legacy.html">FR (Français)</a>
+</div>
 
-<nav class="menu" aria-label="Navigazione Principale">
+<h1>2 novembre</h1>
+<h2>Legacy Protocol Guide &bull; OpenPGP / GnuPG / Ghionym</h2>
+
+<nav class="menu" aria-label="Main Navigation">
   <ul>
-    <li><a href="/">Home (Introduzione e Panoramica)</a></li>
-    <li><a href="/legacy.html" class="active-nav">Guida Canale Legacy (OpenPGP / GnuPG / Ghionym)</a></li>
-    <li><a href="/modern.html">Guida Canale Moderno (Post-Quantum / ML-KEM / pqpg)</a></li>
-    <li><a href="/keys.html">Chiavi Pubbliche del Server &amp; Fingerprint</a></li>
-    <li><a href="/legacy.gmi">Versione Gemtext (/legacy.gmi)</a></li>
+    <li><a href="/index.html">Home (Overview &amp; Security Architecture)</a></li>
+    <li><a href="/legacy.html" class="active-nav">Legacy Channel Guide (OpenPGP / GnuPG / Ghionym)</a></li>
+    <li><a href="/postquantum.html">Post-Quantum Channel Guide (NIST ML-KEM / pqpg)</a></li>
+    <li><a href="/keys.html">Server Public Keys &amp; Fingerprints</a></li>
+    <li><a href="/legacy.gmi">Gemtext Version (/legacy.gmi)</a></li>
   </ul>
 </nav>
 
 <p>
-Il canale legacy di <strong>nymserv-ng</strong> è compatibile al 100% con lo standard storico <code>crooks/ghionym</code> (<code>nymserver.pl</code>).
-Se utilizzi client storici, GnuPG (<code>gpg</code>), Mixmaster o script YAMN, puoi registrare e gestire il tuo alias senza apportare alcuna modifica al tuo setup.
+The legacy channel of <strong>nymserv-ng</strong> maintains 100% bit-level backward compatibility with the historic <code>crooks/ghionym</code> (<code>nymserver.pl</code>) standard.
+If you use existing remailer scripts, GnuPG (<code>gpg</code>), Mixmaster, or YAMN, you can register and operate your pseudonym without any changes to your client setup.
 </p>
 
 <hr>
 
-<h3>1. Come Registrare un Alias (Config)</h3>
+<h3>1. How to Register an Alias (Config)</h3>
 <p>
-Componi un file di testo contenente il blocco <code>Config:</code>, cifralo con la chiave pubblica OpenPGP del server (Key ID: <code>D455E394E202E5CC</code>) e invialo (preferibilmente tramite YAMN o posta ordinaria) a:
+Compose a plain text file containing a standard <code>Config:</code> block, encrypt it with the server's OpenPGP public key (Key ID: <code>D455E394E202E5CC</code>), and transmit it (ideally through YAMN remailers) to:
 <br>
 <code>config@nymserv-ng.virebent.art</code>
 </p>
@@ -80,45 +94,45 @@ Componi un file di testo contenente il blocco <code>Config:</code>, cifralo con 
 From: youralias@nymserv-ng.virebent.art
 Public-Key:
 -----BEGIN PGP PUBLIC KEY BLOCK-----
-... il tuo blocco di chiave pubblica PGP ...
+... your PGP public key block ...
 -----END PGP PUBLIC KEY BLOCK-----
 Reply-Block:
 ::
 Anon-To: your_real_mailbox@destination.org
-... catena a cipolla Mixmaster / Remailer ...
+... Mixmaster / Remailer onion routing chain ...
 
 Nym-Commands: +cryptrecv +acksend +sigsend</pre>
 
-<h4>Flag di Configurazione Supportati</h4>
+<h4>Supported Configuration Flags</h4>
 <ul>
-  <li><code>+cryptrecv</code>: Cifra tutte le mail in arrivo dal clearnet con la tua chiave pubblica prima della consegna (attivo di default, raccomandato).</li>
-  <li><code>+sigsend</code>: Richiede una firma digitale PGP valida su tutti i messaggi in uscita inviati a tuo nome.</li>
-  <li><code>+acksend</code>: Invia una notifica di avvenuta consegna cifrata al tuo Reply-Block a ogni messaggio spedito.</li>
-  <li><code>+fixedsz</code>: Riempie i messaggi a blocchi di dimensione fissa per contrastare l'analisi della lunghezza dei pacchetti.</li>
+  <li><code>+cryptrecv</code>: Encrypts all incoming clearnet emails with your public key prior to remailer delivery (enabled by default, strongly recommended).</li>
+  <li><code>+sigsend</code>: Enforces a valid PGP digital signature on all outbound messages sent under your alias.</li>
+  <li><code>+acksend</code>: Dispatches an encrypted receipt notification to your Reply-Block whenever an outbound email is processed.</li>
+  <li><code>+fixedsz</code>: Pads outbound messages to fixed size increments to frustrate packet length correlation attacks.</li>
 </ul>
 
 <hr>
 
-<h3>2. Come Inviare Email tramite il tuo Alias (Send)</h3>
+<h3>2. Sending Email via Your Alias (Send)</h3>
 <p>
-Per inviare un'email clearnet a nome del tuo alias pseudonimo, componi il messaggio, firmalo con la tua chiave privata PGP, cifralo con la chiave pubblica del server e invialo a:
+To send a clearnet email under your pseudonymous identity, compose the message, sign it with your PGP private key, encrypt it to the server's OpenPGP key, and send it to:
 <br>
 <code>send@nymserv-ng.virebent.art</code>
 </p>
 
 <pre>From: youralias@nymserv-ng.virebent.art
-To: destinatario@qualsiasi-provider.org
-Subject: Saluti dalla rete anonima
+To: recipient@any-provider.org
+Subject: Greetings from the mixnet
 
-Questo messaggio è stato instradato e spedito tramite nymserv-ng.</pre>
+This message was routed and delivered anonymously via nymserv-ng.</pre>
 
 <hr>
 
-<h3>3. Chiave OpenPGP del Server</h3>
+<h3>3. Server OpenPGP Key</h3>
 <p>
-Scarica la chiave pubblica OpenPGP prima di inviare le tue richieste:
+Download the server's public key before submitting configuration or outbound mail:
 <br>
-<a href="/nymserver-openpgp.asc"><strong>=&gt; Scarica nymserver-openpgp.asc (Legacy Channel)</strong></a>
+<a href="/nymserver-openpgp.asc"><strong>=&gt; Download nymserver-openpgp.asc (Legacy Channel)</strong></a>
 </p>
 <p>
 Fingerprint:<br>
@@ -129,8 +143,8 @@ Key ID:<br>
 </p>
 
 <div class="footer">
-  <p>Discussione &amp; Comunità: unisciti a noi sui newsgroup Usenet <strong>alt.privacy.anon-server</strong> e <strong>alt.cypherpunks</strong>.<br>
-  Maintainer: <strong>Gabx</strong> &bull; Codice sorgente: <a href="https://github.com/gabrix73/nymserv-ng">github.com/gabrix73/nymserv-ng</a> &bull; AGPL-3.0</p>
+  <p>Discussion &amp; Community: join us on Usenet newsgroups <strong>alt.privacy.anon-server</strong> and <strong>alt.cypherpunks</strong>.<br>
+  Maintainer: <strong>Gabx</strong> &bull; Source code: <a href="https://github.com/gabrix73/nymserv-ng">github.com/gabrix73/nymserv-ng</a> &bull; AGPL-3.0</p>
 </div>
 
 </body>

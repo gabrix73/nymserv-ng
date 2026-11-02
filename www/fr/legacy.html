@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canal Historique (OpenPGP) &bull; 2 novembre</title>
+<style>
+  body {
+    background: #141414;
+    color: #e2e2e2;
+    font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+    font-size: 15px;
+    line-height: 1.55;
+    margin: 2rem auto;
+    max-width: 75ch;
+    padding: 0 1rem;
+  }
+  h1 { font-size: 1.35rem; margin-bottom: 0.2rem; color: #ffffff; }
+  h2 { font-size: 1.05rem; font-weight: normal; color: #a0a0a0; margin-top: 0; }
+  h3 { font-size: 1.1rem; color: #f0f0f0; margin-top: 2rem; border-bottom: 1px solid #333; padding-bottom: 0.3rem; }
+  h4 { font-size: 0.95rem; color: #cfcfcf; margin-bottom: 0.3rem; }
+  a { color: #72a9ff; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .lang-bar {
+    text-align: right;
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #262626;
+  }
+  .lang-bar a { margin-left: 0.4rem; padding: 0.1rem 0.3rem; }
+  .lang-bar .current-lang { color: #ffffff; font-weight: bold; background: #262626; border-radius: 3px; }
+  .menu {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    padding: 0.8rem 1rem;
+    border-radius: 4px;
+    margin: 1.5rem 0;
+  }
+  .menu ul { list-style: none; padding-left: 0; margin: 0; }
+  .menu li { margin: 0.35rem 0; }
+  .menu li::before { content: "=> "; color: #888; font-weight: bold; }
+  .active-nav { color: #ffffff; font-weight: bold; }
+  pre {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    padding: 0.8rem;
+    overflow-x: auto;
+    font-size: 0.9rem;
+    border-radius: 4px;
+  }
+  code { background: #222; padding: 0.1rem 0.3rem; border-radius: 3px; }
+  ul { padding-left: 1.4rem; }
+  li { margin-bottom: 0.35rem; }
+  hr { border: 0; border-top: 1px solid #333; margin: 2rem 0; }
+  .footer { color: #888; font-size: 0.85rem; margin-top: 3rem; border-top: 1px solid #2a2a2a; padding-top: 1rem; }
+</style>
+</head>
+<body>
+
+<div class="lang-bar" aria-label="Sélection de la langue">
+  Langue: <a href="/legacy.html">EN (English)</a> | <a href="/it/legacy.html">IT (Italiano)</a> | <span class="current-lang">FR (Français)</span>
+</div>
+
+<h1>2 novembre</h1>
+<h2>Guide du Protocole Historique &bull; OpenPGP / GnuPG / Ghionym</h2>
+
+<nav class="menu" aria-label="Navigation Principale">
+  <ul>
+    <li><a href="/fr/index.html">Accueil (Présentation &amp; Architecture de Sécurité)</a></li>
+    <li><a href="/fr/legacy.html" class="active-nav">Guide Canal Historique (OpenPGP / GnuPG / Ghionym)</a></li>
+    <li><a href="/fr/postquantum.html">Guide Canal Post-Quantique (NIST ML-KEM / pqpg)</a></li>
+    <li><a href="/fr/keys.html">Clés Publiques du Serveur &amp; Empreintes</a></li>
+    <li><a href="/fr/legacy.gmi">Version Gemtext (/fr/legacy.gmi)</a></li>
+  </ul>
+</nav>
+
+<p>
+Le canal historique de <strong>nymserv-ng</strong> assure une compatibilité binaire à 100% avec la norme historique <code>crooks/ghionym</code> (<code>nymserver.pl</code>).
+Si vous utilisez des scripts existants, GnuPG (<code>gpg</code>), Mixmaster ou des outils YAMN, vous pouvez enregistrer et gérer votre alias sans modifier votre configuration logicielle.
+</p>
+
+<hr>
+
+<h3>1. Enregistrement d'un Alias (Config)</h3>
+<p>
+Composez un fichier texte contenant le bloc <code>Config:</code>, chiffrez-le avec la clé publique OpenPGP du serveur (Key ID : <code>D455E394E202E5CC</code>), et expédiez-le (idéalement via le mixnet YAMN) à :
+<br>
+<code>config@nymserv-ng.virebent.art</code>
+</p>
+
+<pre>Config:
+From: youralias@nymserv-ng.virebent.art
+Public-Key:
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+... votre bloc de clé publique PGP ...
+-----END PGP PUBLIC KEY BLOCK-----
+Reply-Block:
+::
+Anon-To: your_real_mailbox@destination.org
+... chaîne de routage en oignon Mixmaster / Remailers ...
+
+Nym-Commands: +cryptrecv +acksend +sigsend</pre>
+
+<h4>Drapeaux de Configuration Pris en Charge</h4>
+<ul>
+  <li><code>+cryptrecv</code> : Chiffre tous les courriels entrants depuis le clearnet avec votre clé publique avant livraison (activé par défaut, vivement recommandé).</li>
+  <li><code>+sigsend</code> : Exige une signature numérique PGP valide pour tout message sortant émis sous votre nom d'alias.</li>
+  <li><code>+acksend</code> : Envoie un accusé de réception chiffré à votre Reply-Block lors de chaque envoi effectué.</li>
+  <li><code>+fixedsz</code> : Remplit les messages à taille fixe pour contrer les attaques par analyse de longueur de paquets.</li>
+</ul>
+
+<hr>
+
+<h3>2. Envoyer un E-mail via Votre Alias (Send)</h3>
+<p>
+Pour expédier un courriel vers le clearnet au nom de votre alias pseudonyme, composez le message, signez-le avec votre clé privée PGP, chiffrez-le pour la clé publique du serveur et envoyez-le à :
+<br>
+<code>send@nymserv-ng.virebent.art</code>
+</p>
+
+<pre>From: youralias@nymserv-ng.virebent.art
+To: recipient@any-provider.org
+Subject: Salutations depuis le réseau d'anonymat
+
+Ce message a été routé et délivré anonymement via nymserv-ng.</pre>
+
+<hr>
+
+<h3>3. Clé OpenPGP du Serveur</h3>
+<p>
+Téléchargez la clé publique OpenPGP avant d'émettre vos requêtes de configuration :
+<br>
+<a href="/nymserver-openpgp.asc"><strong>=&gt; Télécharger nymserver-openpgp.asc (Canal Historique)</strong></a>
+</p>
+<p>
+Empreinte (Fingerprint) :<br>
+<code>C5D1 1FC6 DD91 5E45 CE82  4B6E D455 E394 E202 E5CC</code>
+<br>
+Identifiant de clé (Key ID) :<br>
+<code>D455E394E202E5CC</code>
+</p>
+
+<div class="footer">
+  <p>Discussion &amp; Communauté : rejoignez-nous sur les groupes Usenet <strong>alt.privacy.anon-server</strong> et <strong>alt.cypherpunks</strong>.<br>
+  Mainteneur : <strong>Gabx</strong> &bull; Code source : <a href="https://github.com/gabrix73/nymserv-ng">github.com/gabrix73/nymserv-ng</a> &bull; AGPL-3.0</p>
+</div>
+
+</body>
+</html>

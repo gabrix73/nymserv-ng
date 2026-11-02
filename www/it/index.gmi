@@ -1,0 +1,61 @@
+# 2 novembre
+## nymserv-ng • Pseudonym Server per la Rete YAMN
+
+Lingua: => /index.gmi EN (English) | IT (Italiano) | => /fr/index.gmi FR (Français)
+
+=> /it/index.gmi Home (Panoramica e Sicurezza)
+=> /it/legacy.gmi Guida Canale Legacy (OpenPGP / GnuPG / Ghionym)
+=> /it/postquantum.gmi Guida Canale Post-Quantico (NIST ML-KEM / pqpg)
+=> /it/keys.gmi Chiavi Pubbliche del Server & Fingerprint
+
+---
+
+### Cos'è un Nymserver?
+
+Un nymserver (pseudonym server) è un'infrastruttura di posta elettronica che consente di possedere un'identità pseudonima persistente e bidirezionale:
+
+* Un indirizzo pubblico permanente: il tuo pseudonimo è del tipo <alias>@nymserv-ng.virebent.art.
+* Invio e ricezione: puoi inviare email a qualsiasi casella di posta ordinaria (clearnet) in tutto il mondo, e chiunque può risponderti al tuo indirizzo alias.
+* Zero conoscenza dell'identità reale: a differenza dei comuni servizi di webmail, il nymserver non sa chi sei, dove ti trovi né da quale indirizzo IP ti colleghi.
+* Inoltro crittografico a senso unico: quando riceve una mail per il tuo alias, il nymserver la cifra con la tua chiave pubblica e la instrada attraverso la rete dei remailer (Reply-Block / YAMN) verso la tua reale destinazione, senza che il server conosca la tua identità.
+
+---
+
+### Il nostro servizio: nymserv-ng
+
+nymserv-ng è una nuova implementazione del servizio di pseudonimi sviluppata interamente in Rust (ad alta affidabilità, con isolamento della memoria volatile mlock e zeroize), progettata specificamente per la rete anonima di remailer YAMN.
+
+Il servizio opera in modalità Dual-Stack:
+
+#### 1. Versione Legacy (OpenPGP / GnuPG)
+Garantisce il 100% di compatibilità a livello di bit con lo standard storico crooks/ghionym (nymserver.pl). Se possiedi già script, chiavi PGP e flussi di lavoro con Mixmaster o YAMN, puoi registrarti e operare subito senza alcuna modifica al tuo client.
+=> /it/legacy.gmi Leggi la Guida Completa al Canale Legacy (OpenPGP)
+
+#### 2. Canale Post-Quantico (NG & pqpg)
+Risolve le vulnerabilità storiche di OpenPGP (assenza di Forward Secrecy, staticità delle chiavi e vulnerabilità agli attacchi quantistici Harvest Now, Decrypt Later). Utilizza il nuovo standard NIST FIPS 203 ML-KEM-768 combinato con chiavi effimere X25519 e cifratura AEAD ChaCha20-Poly1305.
+È accompagnata dal client standalone in puro Rust pqpg (Post-Quantum Privacy Guard) con supporto QR Code per macchine Air-Gapped.
+=> /it/postquantum.gmi Leggi la Guida Completa al Canale Post-Quantico e pqpg
+
+---
+
+### Custodia dei Dati & Architettura di Sicurezza
+
+Il modello di minaccia assume come scenario il sequestro hardware (cold-boot) o l'intercettazione continua del traffico di rete:
+
+* Identità Zero-Knowledge: Nessun log di accesso, indirizzo IP o dato anagrafico. Le registrazioni transitano unicamente attraverso remailer multi-hop.
+* Cifratura in memoria immediata (+cryptrecv): All'arrivo nel demone LDA, i messaggi vengono cifrati nella RAM prima di toccare il disco permanente. Nessuna mail in chiaro è memorizzata su storage.
+* Igiene della memoria volatile (mlock & zeroize): Buffer bloccati in RAM con syscall mlock per impedire swap su SSD/disco, e sovrascrittura con zeri (zeroize) a fine elaborazione.
+* Forward Secrecy & Protezione Quantistica: Nel canale moderno le chiavi KEM sono effimere e monouso; un sequestro futuro della macchina non decifra il traffico passato.
+* Reply-Block a Cipolla Opachi: I token di ritorno sono blocchi SURB cifrati per il primo remailer del mixnet; il nymserver non conosce la destinazione finale.
+* Database Embedded redb: Nessun servizio database di rete (zero MySQL/Postgres), motore ACID locale in puro Rust senza socket esposti.
+* Zero Telemetria Web: Server Nginx senza logging (access_log off), nessuna telemetria, CSP blindata default-src 'none'.
+
+---
+
+### Discussione & Comunità
+Unisciti alla discussione sui newsgroup Usenet:
+=> news:alt.privacy.anon-server alt.privacy.anon-server
+=> news:alt.cypherpunks alt.cypherpunks
+
+Maintainer: Gabx
+=> https://github.com/gabrix73/nymserv-ng Codice sorgente (AGPL-3.0)

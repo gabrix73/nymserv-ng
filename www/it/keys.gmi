@@ -1,0 +1,43 @@
+# 2 novembre
+## Chiavi Pubbliche Ufficiali del Server • nymserv-ng
+
+Lingua: => /keys.gmi EN (English) | IT (Italiano) | => /fr/keys.gmi FR (Français)
+
+=> /it/index.gmi Home (Panoramica e Sicurezza)
+=> /it/legacy.gmi Guida Canale Legacy (OpenPGP / GnuPG / Ghionym)
+=> /it/postquantum.gmi Guida Canale Post-Quantico (NIST ML-KEM / pqpg)
+=> /it/keys.gmi Chiavi Pubbliche del Server & Fingerprint
+
+---
+
+Verifica sempre i fingerprint e gli hash crittografici prima di inviare comunicazioni cifrate o configurazioni a nymserv-ng.
+
+---
+
+### 1. Chiave Master OpenPGP (Canale Legacy)
+
+Utilizzata per cifrare le richieste Config: e send: nel protocollo storico GnuPG / Ghionym.
+
+=> /nymserver-openpgp.asc Download nymserver-openpgp.asc
+
+Fingerprint OpenPGP:
+C5D1 1FC6 DD91 5E45 CE82  4B6E D455 E394 E202 E5CC
+
+Long Key ID:
+D455E394E202E5CC
+
+Algoritmo: RSA 4096-bit
+User ID: nymserv-ng pseudonym server <config@nymserv-ng.virebent.art>
+
+---
+
+### 2. Chiave Master Post-Quantum (Canale Post-Quantico)
+
+Utilizzata per l'incapsulamento crittografico KEM resistente ad attacchi quantistici.
+
+=> /nymserver-pq-pubkey.bin Download nymserver-pq-pubkey.bin (1184 byte)
+
+SHA256 Hash della Chiave Pubblica:
+12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4
+
+Algoritmo: NIST FIPS 203 ML-KEM-768

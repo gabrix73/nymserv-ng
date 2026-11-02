@@ -1,78 +1,72 @@
 # 2 novembre
-## Guida al Protocollo Legacy • OpenPGP / GnuPG / Ghionym
+## Legacy Protocol Guide • OpenPGP / GnuPG / Ghionym
 
-=> / Home (Introduzione e Panoramica)
-=> /legacy.gmi Guida Canale Legacy (OpenPGP / GnuPG / Ghionym)
-=> /modern.gmi Guida Canale Moderno (Post-Quantum / ML-KEM / pqpg)
-=> /keys.gmi Chiavi Pubbliche del Server & Fingerprint
+Language: EN (English) | => /it/legacy.gmi IT (Italiano) | => /fr/legacy.gmi FR (Français)
 
----
-
-Il canale legacy di nymserv-ng è compatibile al 100% con lo standard storico crooks/ghionym (nymserver.pl).
-Se utilizzi client storici, GnuPG (gpg), Mixmaster o script YAMN, puoi registrare e gestire il tuo alias senza apportare alcuna modifica al tuo setup.
+=> /index.gmi Home (Overview & Security Architecture)
+=> /legacy.gmi Legacy Channel Guide (OpenPGP / GnuPG / Ghionym)
+=> /postquantum.gmi Post-Quantum Channel Guide (NIST ML-KEM / pqpg)
+=> /keys.gmi Server Public Keys & Fingerprints
 
 ---
 
-### 1. Come Registrare un Alias (Config)
+The legacy channel of nymserv-ng maintains 100% bit-level backward compatibility with the historic crooks/ghionym (nymserver.pl) standard.
+If you use existing remailer scripts, GnuPG (gpg), Mixmaster, or YAMN, you can register and operate your pseudonym without any changes to your client setup.
 
-Componi un file di testo contenente il blocco Config:, cifralo con la chiave pubblica OpenPGP del server (Key ID: D455E394E202E5CC) e invialo a:
+---
+
+### 1. How to Register an Alias (Config)
+
+Compose a plain text file containing a standard Config: block, encrypt it with the server's OpenPGP public key (Key ID: D455E394E202E5CC), and transmit it to:
 config@nymserv-ng.virebent.art
 
-Formato della richiesta:
+Request format:
 ```
 Config:
 From: youralias@nymserv-ng.virebent.art
 Public-Key:
 -----BEGIN PGP PUBLIC KEY BLOCK-----
-... il tuo blocco di chiave pubblica PGP ...
+... your PGP public key block ...
 -----END PGP PUBLIC KEY BLOCK-----
 Reply-Block:
 ::
 Anon-To: your_real_mailbox@destination.org
-... catena a cipolla Mixmaster / Remailer ...
+... Mixmaster / Remailer onion routing chain ...
 
 Nym-Commands: +cryptrecv +acksend +sigsend
 ```
 
-#### Flag di Configurazione Supportati
-* +cryptrecv: Cifra tutte le mail in arrivo dal clearnet con la tua chiave pubblica prima della consegna (raccomandato).
-* +sigsend: Richiede una firma digitale PGP valida su tutti i messaggi in uscita inviati a tuo nome.
-* +acksend: Invia una notifica di avvenuta consegna cifrata al tuo Reply-Block a ogni messaggio spedito.
-* +fixedsz: Riempie i messaggi a blocchi di dimensione fissa per contrastare l'analisi della lunghezza dei pacchetti.
+#### Supported Configuration Flags
+* +cryptrecv: Encrypts all incoming clearnet emails with your public key prior to remailer delivery (strongly recommended).
+* +sigsend: Enforces a valid PGP digital signature on all outbound messages sent under your alias.
+* +acksend: Dispatches an encrypted receipt notification to your Reply-Block whenever an outbound email is processed.
+* +fixedsz: Pads outbound messages to fixed size increments to frustrate packet length correlation attacks.
 
 ---
 
-### 2. Come Inviare Email tramite il tuo Alias (Send)
+### 2. Sending Email via Your Alias (Send)
 
-Per inviare un'email clearnet a nome del tuo alias pseudonimo, componi il messaggio, firmalo con la tua chiave privata PGP, cifralo con la chiave pubblica del server e invialo a:
+To send a clearnet email under your pseudonymous identity, compose the message, sign it with your PGP private key, encrypt it to the server's OpenPGP key, and send it to:
 send@nymserv-ng.virebent.art
 
-Formato del messaggio decifrato:
+Decrypted payload format:
 ```
 From: youralias@nymserv-ng.virebent.art
-To: destinatario@qualsiasi-provider.org
-Subject: Saluti dalla rete anonima
+To: recipient@any-provider.org
+Subject: Greetings from the mixnet
 
-Questo messaggio è stato instradato e spedito tramite nymserv-ng.
+This message was routed and delivered anonymously via nymserv-ng.
 ```
 
 ---
 
-### 3. Chiave OpenPGP del Server
-=> /nymserver-openpgp.asc Scarica nymserver-openpgp.asc (Legacy Channel)
+### 3. Server OpenPGP Key
+
+Download the server's public key before submitting configuration or outbound mail:
+=> /nymserver-openpgp.asc Download nymserver-openpgp.asc
 
 Fingerprint:
-`C5D1 1FC6 DD91 5E45 CE82  4B6E D455 E394 E202 E5CC`
+C5D1 1FC6 DD91 5E45 CE82  4B6E D455 E394 E202 E5CC
 
-Long Key ID:
-`D455E394E202E5CC`
-
----
-
-### Discussione & Comunità
-Unisciti alla discussione sui newsgroup Usenet:
-=> news:alt.privacy.anon-server alt.privacy.anon-server
-=> news:alt.cypherpunks alt.cypherpunks
-
-Maintainer: Gabx
-=> https://github.com/gabrix73/nymserv-ng Codice sorgente (AGPL-3.0)
+Key ID:
+D455E394E202E5CC

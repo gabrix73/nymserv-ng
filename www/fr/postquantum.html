@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canal Post-Quantique (NIST ML-KEM & pqpg) &bull; 2 novembre</title>
+<style>
+  body {
+    background: #141414;
+    color: #e2e2e2;
+    font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+    font-size: 15px;
+    line-height: 1.55;
+    margin: 2rem auto;
+    max-width: 75ch;
+    padding: 0 1rem;
+  }
+  h1 { font-size: 1.35rem; margin-bottom: 0.2rem; color: #ffffff; }
+  h2 { font-size: 1.05rem; font-weight: normal; color: #a0a0a0; margin-top: 0; }
+  h3 { font-size: 1.1rem; color: #f0f0f0; margin-top: 2rem; border-bottom: 1px solid #333; padding-bottom: 0.3rem; }
+  h4 { font-size: 0.95rem; color: #cfcfcf; margin-bottom: 0.3rem; }
+  a { color: #72a9ff; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .lang-bar {
+    text-align: right;
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #262626;
+  }
+  .lang-bar a { margin-left: 0.4rem; padding: 0.1rem 0.3rem; }
+  .lang-bar .current-lang { color: #ffffff; font-weight: bold; background: #262626; border-radius: 3px; }
+  .menu {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    padding: 0.8rem 1rem;
+    border-radius: 4px;
+    margin: 1.5rem 0;
+  }
+  .menu ul { list-style: none; padding-left: 0; margin: 0; }
+  .menu li { margin: 0.35rem 0; }
+  .menu li::before { content: "=> "; color: #888; font-weight: bold; }
+  .active-nav { color: #ffffff; font-weight: bold; }
+  pre {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    padding: 0.8rem;
+    overflow-x: auto;
+    font-size: 0.9rem;
+    border-radius: 4px;
+  }
+  code { background: #222; padding: 0.1rem 0.3rem; border-radius: 3px; }
+  ul { padding-left: 1.4rem; }
+  li { margin-bottom: 0.35rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+  th, td { border: 1px solid #333; padding: 0.5rem 0.7rem; text-align: left; }
+  th { background: #222; color: #fff; }
+  hr { border: 0; border-top: 1px solid #333; margin: 2rem 0; }
+  .footer { color: #888; font-size: 0.85rem; margin-top: 3rem; border-top: 1px solid #2a2a2a; padding-top: 1rem; }
+</style>
+</head>
+<body>
+
+<div class="lang-bar" aria-label="Sélection de la langue">
+  Langue: <a href="/postquantum.html">EN (English)</a> | <a href="/it/postquantum.html">IT (Italiano)</a> | <span class="current-lang">FR (Français)</span>
+</div>
+
+<h1>2 novembre</h1>
+<h2>Guide du Protocole Post-Quantique &bull; NIST ML-KEM &amp; pqpg</h2>
+
+<nav class="menu" aria-label="Navigation Principale">
+  <ul>
+    <li><a href="/fr/index.html">Accueil (Présentation &amp; Architecture de Sécurité)</a></li>
+    <li><a href="/fr/legacy.html">Guide Canal Historique (OpenPGP / GnuPG / Ghionym)</a></li>
+    <li><a href="/fr/postquantum.html" class="active-nav">Guide Canal Post-Quantique (NIST ML-KEM / pqpg)</a></li>
+    <li><a href="/fr/keys.html">Clés Publiques du Serveur &amp; Empreintes</a></li>
+    <li><a href="/fr/postquantum.gmi">Version Gemtext (/fr/postquantum.gmi)</a></li>
+  </ul>
+</nav>
+
+<h3>Pourquoi Migrer vers le Canal Post-Quantique ?</h3>
+<p>
+Bien que le protocole historique OpenPGP demeure opérationnel pour assurer la continuité d'usage, il présente des faiblesses architecturales majeures pour la confidentialité à haut risque :
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Fonctionnalité</th>
+      <th>OpenPGP Historique</th>
+      <th>Canal Post-Quantique (NG)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Résistance Quantique</strong></td>
+      <td>Vulnérable à Shor (RSA / Courbes Elliptiques)</td>
+      <td><strong>Immunisé</strong> (NIST FIPS 203 ML-KEM-768)</td>
+    </tr>
+    <tr>
+      <td><strong>Confidentialité Persistante (PFS)</strong></td>
+      <td>Absente (clé statique : la saisie compromet tout le passé)</td>
+      <td><strong>Parfaite</strong> (clés éphémères X25519 par session de message)</td>
+    </tr>
+    <tr>
+      <td><strong>Intégrité du Chiffré</strong></td>
+      <td>Signature facultative / paquets malléables</td>
+      <td><strong>AEAD Authentifié</strong> (ChaCha20-Poly1305)</td>
+    </tr>
+    <tr>
+      <td><strong>Dépendances Logicielles</strong></td>
+      <td>GnuPG lourd, démons dirmngr/agent, bibliothèques C</td>
+      <td><strong>pqpg : binaire autonome en Rust pur (1,2 Mo)</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Opérations Isolées (Air-Gap)</strong></td>
+      <td>Complexes (transfert de fichiers ou clés USB)</td>
+      <td><strong>Affichage QR Code natif dans le terminal</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h3>Le Client : pqpg (Post-Quantum Privacy Guard)</h3>
+<p>
+Pour permettre l'adoption immédiate du canal post-quantique sans dépendre d'environnements cryptographiques lourds, nous mettons à disposition <strong>pqpg</strong>, un utilitaire en ligne de commande autonome <strong>écrit intégralement en Rust pur</strong> (sécurité mémoire native, absence de débordement de tampon, mémoire protégée par <code>mlock</code> et <code>zeroize</code>).
+</p>
+
+<h4>Téléchargement Direct du Binaire (Linux x86_64 Autonome, 1,2 Mo)</h4>
+<pre>curl -sSL https://nymserv-ng.virebent.art/bin/pqpg-linux-amd64 -o ~/bin/pqpg
+chmod +x ~/bin/pqpg</pre>
+<p>SHA256 : <code>fc1eabc6ec800b494545f558f520ec3493741977664d960cb2e7be75ea46e415</code></p>
+
+<h4>Versions pour macOS et Windows</h4>
+<p>
+Les binaires compilés pour macOS (Apple Silicon M1-M4 &amp; Intel) et Windows (<code>pqpg-windows-amd64.exe</code>) sont accessibles sur :<br>
+<a href="https://github.com/gabrix73/pqpg/releases"><strong>=&gt; GitHub Releases : github.com/gabrix73/pqpg/releases</strong></a>
+</p>
+
+<hr>
+
+<h3>Guide Pratique Pas-à-Pas avec pqpg</h3>
+
+<h4>1. Génération de votre paire de clés</h4>
+<pre>pqpg keygen -n mynym --qr</pre>
+<p>
+Génère la clé privée <code>mynym.key</code> (droits <code>0600</code>) et la clé publique <code>mynym.pub</code>.
+L'option <code>--qr</code> affiche un QR Code haute densité dans le terminal pour permettre à une caméra ou un appareil isolé de lire la clé sans connexion réseau.
+</p>
+
+<h4>2. Chiffrement d'un message pour un destinataire</h4>
+<pre>pqpg encrypt -r recipient.pub message.txt -o message.msg</pre>
+<p>Ou directement depuis l'entrée standard avec projection QR :</p>
+<pre>echo "Note confidentielle" | pqpg encrypt -r recipient.pub --qr</pre>
+
+<h4>3. Déchiffrement du courrier reçu</h4>
+<pre>pqpg decrypt -s mynym.key message.msg</pre>
+
+<h4>4. Signature numérique et vérification (Ed25519)</h4>
+<pre># Signature d'un fichier (génère une signature détachée de 64 octets)
+pqpg sign -s mynym.key document.pdf -o document.sig
+
+# Vérification avec la clé publique de l'auteur
+pqpg verify -k author.pub -s document.sig document.pdf</pre>
+
+<h4>5. Affichage QR Code pour Machine Isolée (Air-Gap)</h4>
+<pre>pqpg qr tout_fichier.txt</pre>
+
+<hr>
+
+<h3>Clé Post-Quantique du Serveur</h3>
+<p>
+Pour encapsuler des requêtes d'enregistrement ou des messages adressés à nymserv-ng, téléchargez la clé publique ML-KEM-768 officielle du serveur :
+<br>
+<a href="/nymserver-pq-pubkey.bin"><strong>=&gt; Télécharger nymserver-pq-pubkey.bin (Canal Post-Quantique, 1184 octets)</strong></a>
+</p>
+<p>
+SHA256 Clé Publique :<br>
+<code>12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4</code>
+</p>
+
+<div class="footer">
+  <p>Discussion &amp; Communauté : rejoignez-nous sur les groupes Usenet <strong>alt.privacy.anon-server</strong> et <strong>alt.cypherpunks</strong>.<br>
+  Mainteneur : <strong>Gabx</strong> &bull; Code source : <a href="https://github.com/gabrix73/nymserv-ng">github.com/gabrix73/nymserv-ng</a> &bull; AGPL-3.0</p>
+</div>
+
+</body>
+</html>

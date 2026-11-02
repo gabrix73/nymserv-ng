@@ -1,0 +1,43 @@
+# 2 novembre
+## Clés Publiques Officielles du Serveur • nymserv-ng
+
+Langue : => /keys.gmi EN (English) | => /it/keys.gmi IT (Italiano) | FR (Français)
+
+=> /fr/index.gmi Accueil (Présentation & Sécurité)
+=> /fr/legacy.gmi Guide Canal Historique (OpenPGP / GnuPG / Ghionym)
+=> /fr/postquantum.gmi Guide Canal Post-Quantique (NIST ML-KEM / pqpg)
+=> /fr/keys.gmi Clés Publiques du Serveur & Empreintes
+
+---
+
+Vérifiez toujours les empreintes et les condensats avant de transmettre des requêtes de configuration ou du courrier chiffré à nymserv-ng.
+
+---
+
+### 1. Clé Maîtresse OpenPGP (Canal Historique)
+
+Utilisée pour chiffrer les requêtes Config: et les émissions send: du protocole classique GnuPG / Ghionym.
+
+=> /nymserver-openpgp.asc Télécharger nymserver-openpgp.asc
+
+Empreinte OpenPGP (Fingerprint) :
+C5D1 1FC6 DD91 5E45 CE82  4B6E D455 E394 E202 E5CC
+
+Identifiant Long (Key ID) :
+D455E394E202E5CC
+
+Algorithme : RSA 4096 bits
+Identité (UID) : nymserv-ng pseudonym server <config@nymserv-ng.virebent.art>
+
+---
+
+### 2. Clé Maîtresse Post-Quantique (Canal Post-Quantique)
+
+Utilisée pour l'encapsulation de clé KEM résistante à la cryptanalyse quantique.
+
+=> /nymserver-pq-pubkey.bin Télécharger nymserver-pq-pubkey.bin (1184 octets)
+
+Condensat SHA256 de la Clé Publique :
+12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4
+
+Algorithme : NIST FIPS 203 ML-KEM-768

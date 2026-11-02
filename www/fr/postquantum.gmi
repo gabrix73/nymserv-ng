@@ -1,0 +1,82 @@
+# 2 novembre
+## Guide du Protocole Post-Quantique • NIST ML-KEM & pqpg
+
+Langue : => /postquantum.gmi EN (English) | => /it/postquantum.gmi IT (Italiano) | FR (Français)
+
+=> /fr/index.gmi Accueil (Présentation & Sécurité)
+=> /fr/legacy.gmi Guide Canal Historique (OpenPGP / GnuPG / Ghionym)
+=> /fr/postquantum.gmi Guide Canal Post-Quantique (NIST ML-KEM / pqpg)
+=> /fr/keys.gmi Clés Publiques du Serveur & Empreintes
+
+---
+
+### Pourquoi Migrer vers le Canal Post-Quantique ?
+
+Bien que le protocole historique OpenPGP demeure opérationnel pour assurer la continuité d'usage, il présente des faiblesses architecturales majeures pour la confidentialité à haut risque :
+
+* Résistance Quantique : OpenPGP s'appuie sur RSA/ECC vulnérables à l'algorithme de Shor. Le canal post-quantique adopte NIST FIPS 203 ML-KEM-768 immunisé contre "Harvest Now, Decrypt Later".
+* Confidentialité Persistante (PFS) : En OpenPGP les clés sont statiques ; la saisie matérielle compromet le passé. Avec ML-KEM-768 + X25519 éphémère, chaque message bénéficie de clés temporaires à usage unique.
+* Intégrité AEAD : Zéro malléabilité du texte chiffré grâce à ChaCha20-Poly1305.
+* Pile Logicielle Légère : Aucun dériveur lourd GnuPG ; pqpg est un binaire autonome en Rust pur (1,2 Mo).
+* Opérations Isolées (Air-Gap) : Affichage direct de QR Code dans le terminal pour ordinateurs déconnectés.
+
+---
+
+### Le Client : pqpg (Post-Quantum Privacy Guard)
+
+pqpg est un utilitaire autonome en ligne de commande écrit en Rust pur (sécurité mémoire, verrouillage mlock et nettoyage zeroize).
+
+#### Téléchargement Direct (Linux x86_64, 1,2 Mo)
+=> /bin/pqpg-linux-amd64 Télécharger pqpg-linux-amd64
+=> /bin/pqpg-linux-amd64.sha256 Condensat SHA256
+
+Commande rapide d'installation :
+```
+curl -sSL https://nymserv-ng.virebent.art/bin/pqpg-linux-amd64 -o ~/bin/pqpg
+chmod +x ~/bin/pqpg
+```
+
+#### Versions pour macOS et Windows
+=> https://github.com/gabrix73/pqpg/releases Versions GitHub Releases pour macOS (Apple Silicon/Intel) et Windows (.exe)
+
+---
+
+### Guide Pratique Pas-à-Pas avec pqpg
+
+1. Génération de votre paire de clés :
+```
+pqpg keygen -n mynym --qr
+```
+Génère mynym.key (droits 0600) et mynym.pub, avec projection QR Code dans le terminal.
+
+2. Chiffrement d'un message :
+```
+pqpg encrypt -r recipient.pub message.txt -o message.msg
+echo "Note confidentielle" | pqpg encrypt -r recipient.pub --qr
+```
+
+3. Déchiffrement du courrier reçu :
+```
+pqpg decrypt -s mynym.key message.msg
+```
+
+4. Signature numérique et vérification (Ed25519) :
+```
+pqpg sign -s mynym.key document.pdf -o document.sig
+pqpg verify -k author.pub -s document.sig document.pdf
+```
+
+5. Affichage QR Code pour Machine Isolée (Air-Gap) :
+```
+pqpg qr tout_fichier.txt
+```
+
+---
+
+### Clé Post-Quantique du Serveur
+
+Téléchargez la clé publique ML-KEM-768 officielle :
+=> /nymserver-pq-pubkey.bin Télécharger nymserver-pq-pubkey.bin (1184 octets)
+
+SHA256 :
+12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4

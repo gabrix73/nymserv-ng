@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2 novembre &bull; nymserv-ng.virebent.art</title>
+<style>
+  body {
+    background: #141414;
+    color: #e2e2e2;
+    font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+    font-size: 15px;
+    line-height: 1.55;
+    margin: 2rem auto;
+    max-width: 75ch;
+    padding: 0 1rem;
+  }
+  h1 { font-size: 1.35rem; margin-bottom: 0.2rem; color: #ffffff; }
+  h2 { font-size: 1.05rem; font-weight: normal; color: #a0a0a0; margin-top: 0; }
+  h3 { font-size: 1.1rem; color: #f0f0f0; margin-top: 2rem; border-bottom: 1px solid #333; padding-bottom: 0.3rem; }
+  h4 { font-size: 0.95rem; color: #d0d0d0; margin-top: 1.2rem; margin-bottom: 0.2rem; }
+  a { color: #72a9ff; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .lang-bar {
+    text-align: right;
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #262626;
+  }
+  .lang-bar a { margin-left: 0.4rem; padding: 0.1rem 0.3rem; }
+  .lang-bar .current-lang { color: #ffffff; font-weight: bold; background: #262626; border-radius: 3px; }
+  .menu {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    padding: 0.8rem 1rem;
+    border-radius: 4px;
+    margin: 1.5rem 0;
+  }
+  .menu ul { list-style: none; padding-left: 0; margin: 0; }
+  .menu li { margin: 0.35rem 0; }
+  .menu li::before { content: "=> "; color: #888; font-weight: bold; }
+  .active-nav { color: #ffffff; font-weight: bold; }
+  .security-box {
+    background: #181c20;
+    border: 1px solid #2d4255;
+    padding: 1rem;
+    border-radius: 4px;
+    margin: 1.5rem 0;
+  }
+  ul { padding-left: 1.4rem; }
+  li { margin-bottom: 0.35rem; }
+  code { background: #222; padding: 0.1rem 0.3rem; border-radius: 3px; }
+  hr { border: 0; border-top: 1px solid #333; margin: 2rem 0; }
+  .footer { color: #888; font-size: 0.85rem; margin-top: 3rem; border-top: 1px solid #2a2a2a; padding-top: 1rem; }
+</style>
+</head>
+<body>
+
+<div class="lang-bar" aria-label="Selezione della lingua">
+  Lingua: <a href="/index.html">EN (English)</a> | <span class="current-lang">IT (Italiano)</span> | <a href="/fr/index.html">FR (Français)</a>
+</div>
+
+<h1>2 novembre</h1>
+<h2>nymserv-ng &bull; Pseudonym Server per la Rete di Remailer YAMN</h2>
+
+<nav class="menu" aria-label="Navigazione Principale">
+  <ul>
+    <li><a href="/it/index.html" class="active-nav">Home (Panoramica e Architettura di Sicurezza)</a></li>
+    <li><a href="/it/legacy.html">Guida Canale Legacy (OpenPGP / GnuPG / Ghionym)</a></li>
+    <li><a href="/it/postquantum.html">Guida Canale Post-Quantico (NIST ML-KEM / pqpg)</a></li>
+    <li><a href="/it/keys.html">Chiavi Pubbliche del Server &amp; Fingerprint</a></li>
+    <li><a href="/it/index.gmi">Capsula Gemini Nativa (gemini://nymserv-ng.virebent.art/it/)</a></li>
+  </ul>
+</nav>
+
+<h3>Cos'è un Nymserver?</h3>
+<p>
+Un <strong>nymserver</strong> (pseudonym server) è un relay crittografico di posta elettronica che consente a chiunque di disporre di una <strong>identità pseudonima persistente e bidirezionale</strong> sulla rete Internet:
+</p>
+<ul>
+  <li><strong>Indirizzo pubblico permanente</strong>: il tuo pseudonimo è nella forma <code>&lt;alias&gt;@nymserv-ng.virebent.art</code>.</li>
+  <li><strong>Inoltro bidirezionale con clearnet</strong>: puoi inviare messaggi a qualunque normale casella di posta nel mondo, e qualsiasi mittente clearnet può risponderti al tuo alias.</li>
+  <li><strong>Zero conoscenza dell'identità reale</strong>: a differenza dei comuni servizi email o webmail commerciali, il nymserver <strong>non sa chi sei, dove vivi né quale sia il tuo indirizzo IP</strong>.</li>
+  <li><strong>Instradamento crittografico a cipolla</strong>: quando arriva un messaggio per il tuo alias, il nymserver cifra il contenuto con la tua chiave pubblica e lo inietta nella rete anonima di remailer (YAMN / Reply-Block a strati) verso la tua casella reale. Il server conserva solo token di instradamento opachi, mai la tua destinazione effettiva.</li>
+</ul>
+
+<hr>
+
+<h3>Il nostro servizio: nymserv-ng</h3>
+<p>
+<strong>nymserv-ng</strong> è un motore di pseudonimi di nuova generazione scritto interamente in puro <strong>Rust</strong>. È progettato specificamente per la rete anonima di remailer <strong>YAMN</strong> (Yet Another Mix Network), con rigoroso isolamento della memoria, alta concorrenza e difesa in profondità.
+</p>
+<p>
+Il servizio opera in modalità <strong>Dual-Stack</strong>, garantendo sia la continuità storica che la massima sicurezza crittografica post-quantica:
+</p>
+
+<ul>
+  <li>
+    <strong>1. Canale Legacy (OpenPGP / GnuPG)</strong>:
+    Garantisce la compatibilità a livello di bit con lo standard storico <code>crooks/ghionym</code> (<code>nymserver.pl</code>). Script esistenti, configurazioni GnuPG e client Mixmaster/YAMN possono creare alias e operare immediatamente senza alcuna modifica.
+    <br>
+    <a href="/it/legacy.html"><strong>=&gt; Leggi la Guida Completa al Canale Legacy (OpenPGP)</strong></a>
+  </li>
+  <li style="margin-top: 1rem;">
+    <strong>2. Canale Moderno (Post-Quantum NG &amp; pqpg)</strong>:
+    Supera le debolezze strutturali del vecchio OpenPGP (assenza di Forward Secrecy, staticità delle chiavi e vulnerabilità agli attacchi quantistici <em>Harvest Now, Decrypt Later</em>). Adotta lo standard ufficiale <strong>NIST FIPS 203 ML-KEM-768</strong> combinato con scambio di chiavi effimere X25519, cifratura autenticata AEAD ChaCha20-Poly1305 e firme Ed25519.
+    È affiancato dal client standalone in puro Rust <strong>pqpg</strong> (Post-Quantum Privacy Guard), completo di rendering QR code da terminale per macchine air-gapped isolate dalla rete.
+    <br>
+    <a href="/it/postquantum.html"><strong>=&gt; Leggi la Guida al Canale Post-Quantico e Documentazione pqpg</strong></a>
+  </li>
+</ul>
+
+<hr>
+
+<h3>Custodia dei Dati &amp; Architettura di Sicurezza</h3>
+
+<p>
+Il modello di minaccia fondamentale di <strong>2 novembre</strong> assume come scenario operativo la possibile ispezione non autorizzata, l'intercettazione di rete, l'ordine giudiziario o il sequestro fisico del server (estrazione cold-boot). L'architettura è concepita affinché <strong>anche un sequestro dell'hardware non riveli nulla sui nostri utenti</strong>:
+</p>
+
+<div class="security-box">
+  <h4>1. Modello di Identità Zero-Knowledge</h4>
+  <p>
+    Il server non memorizza dati personali, numeri di telefono, dati di pagamento o log di accesso. Le richieste di registrazione e configurazione degli alias transitano esclusivamente attraverso remailer anonimi multi-hop. Il server non ha alcuna possibilità tecnica di associare un alias a un individuo o a un nodo di rete originario.
+  </p>
+
+  <h4>2. Cifratura Immediata in Memoria all'Arrivo (+cryptrecv)</h4>
+  <p>
+    Quando una email clearnet raggiunge il Local Delivery Agent (<code>nymserv-lda</code>), viene processata unicamente nella memoria volatile RAM. Prima che avvenga qualsiasi scrittura su disco o accodamento, il corpo del messaggio viene cifrato con la chiave pubblica dell'alias (OpenPGP o ML-KEM/ChaCha20-Poly1305). <strong>Nessun testo in chiaro degli utenti viene mai scritto su disco permanente.</strong>
+  </p>
+
+  <h4>3. Igiene della Memoria Volatile (mlock &amp; zeroize)</h4>
+  <p>
+    Per scongiurare il rischio di leak verso le partizioni swap su disco NVMe/SSD, i buffer di memoria sensibili sono bloccati in RAM tramite la syscall Linux <code>mlock</code>. Al completamento delle operazioni crittografiche, le regioni di memoria contenenti payload decifrati, chiavi di sessione o ordini di configurazione vengono sovrascritte forzatamente con zeri tramite la primitiva <code>zeroize</code>.
+  </p>
+
+  <h4>4. Forward Secrecy &amp; Resistenza alla Cospirazione Quantistica</h4>
+  <p>
+    Nel canale moderno, ogni scambio usa un meccanismo di incapsulamento KEM effimero monouso. Se anche la chiave di lungo termine del server dovesse essere compromessa o sequestrata in futuro, il traffico passato registrato dalle agenzie di sorveglianza non potrà essere decifrato retroattivamente (totale immunità a <em>Harvest Now, Decrypt Later</em>).
+  </p>
+
+  <h4>5. Reply-Block a Cipolla Opachi (SURB)</h4>
+  <p>
+    Gli indirizzi di consegna registrati nel database non sono indirizzi email, ma blocchi di risposta pre-cifrati a strati multipli. Il primo strato è cifrato con la chiave pubblica del primo remailer YAMN. Il nymserver è crittograficamente all'oscuro del numero di hop intermedi e della casella email reale di destinazione.
+  </p>
+
+  <h4>6. Database Embedded ACID e Superficie d'Attacco Ridotta</h4>
+  <p>
+    <code>nymserv-ng</code> non esegue database SQL esterni (nessun MySQL, MariaDB o PostgreSQL). Lo storage è gestito internamente al processo da <strong>redb</strong>, un key-value store ACID e crash-safe scritto in puro Rust. Non esistono porte di rete in ascolto per il database, eliminando alla radice ogni vettore di attacco remoto.
+  </p>
+
+  <h4>7. Zero Telemetria Web &amp; Hardening Minimale</h4>
+  <p>
+    La presenza web è rigorosamente puro testo e HTML leggero. Nginx è configurato con <code>access_log off</code> (nessun log IP dei visitatori), zero cookie, nessun tracker, e una ferrea Content Security Policy (<code>default-src 'none'</code>). Il sito è pienamente compatibile con Lynx, w3m, Tor Browser e via protocollo Gemini.
+  </p>
+</div>
+
+<hr>
+
+<div class="footer">
+  <p>Discussione &amp; Comunità: unisciti a noi sui newsgroup Usenet <strong>alt.privacy.anon-server</strong> e <strong>alt.cypherpunks</strong>.<br>
+  Maintainer: <strong>Gabx</strong> &bull; Codice sorgente: <a href="https://github.com/gabrix73/nymserv-ng">github.com/gabrix73/nymserv-ng</a> &bull; AGPL-3.0</p>
+</div>
+
+</body>
+</html>

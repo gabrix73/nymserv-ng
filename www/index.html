@@ -18,8 +18,19 @@
   h1 { font-size: 1.35rem; margin-bottom: 0.2rem; color: #ffffff; }
   h2 { font-size: 1.05rem; font-weight: normal; color: #a0a0a0; margin-top: 0; }
   h3 { font-size: 1.1rem; color: #f0f0f0; margin-top: 2rem; border-bottom: 1px solid #333; padding-bottom: 0.3rem; }
+  h4 { font-size: 0.95rem; color: #d0d0d0; margin-top: 1.2rem; margin-bottom: 0.2rem; }
   a { color: #72a9ff; text-decoration: none; }
   a:hover { text-decoration: underline; }
+  .lang-bar {
+    text-align: right;
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #262626;
+  }
+  .lang-bar a { margin-left: 0.4rem; padding: 0.1rem 0.3rem; }
+  .lang-bar .current-lang { color: #ffffff; font-weight: bold; background: #262626; border-radius: 3px; }
   .menu {
     background: #1a1a1a;
     border: 1px solid #333;
@@ -31,69 +42,126 @@
   .menu li { margin: 0.35rem 0; }
   .menu li::before { content: "=> "; color: #888; font-weight: bold; }
   .active-nav { color: #ffffff; font-weight: bold; }
+  .security-box {
+    background: #181c20;
+    border: 1px solid #2d4255;
+    padding: 1rem;
+    border-radius: 4px;
+    margin: 1.5rem 0;
+  }
   ul { padding-left: 1.4rem; }
   li { margin-bottom: 0.35rem; }
+  code { background: #222; padding: 0.1rem 0.3rem; border-radius: 3px; }
   hr { border: 0; border-top: 1px solid #333; margin: 2rem 0; }
   .footer { color: #888; font-size: 0.85rem; margin-top: 3rem; border-top: 1px solid #2a2a2a; padding-top: 1rem; }
 </style>
 </head>
 <body>
 
-<h1>2 novembre</h1>
-<h2>nymserv-ng &bull; Pseudonym Server per la Rete YAMN</h2>
+<div class="lang-bar" aria-label="Language selection">
+  Language: <span class="current-lang">EN (English)</span> | <a href="/it/index.html">IT (Italiano)</a> | <a href="/fr/index.html">FR (Français)</a>
+</div>
 
-<nav class="menu" aria-label="Navigazione Principale">
+<h1>2 novembre</h1>
+<h2>nymserv-ng &bull; Pseudonym Server for the YAMN Mix Network</h2>
+
+<nav class="menu" aria-label="Main Navigation">
   <ul>
-    <li><a href="/" class="active-nav">Home (Introduzione e Panoramica)</a></li>
-    <li><a href="/legacy.html">Guida Canale Legacy (OpenPGP / GnuPG / Ghionym)</a></li>
-    <li><a href="/modern.html">Guida Canale Moderno (Post-Quantum / ML-KEM / pqpg)</a></li>
-    <li><a href="/keys.html">Chiavi Pubbliche del Server &amp; Fingerprint</a></li>
-    <li><a href="/index.gmi">Capsula Gemini Nativa (gemini://nymserv-ng.virebent.art)</a></li>
+    <li><a href="/index.html" class="active-nav">Home (Overview &amp; Security Architecture)</a></li>
+    <li><a href="/legacy.html">Legacy Channel Guide (OpenPGP / GnuPG / Ghionym)</a></li>
+    <li><a href="/postquantum.html">Post-Quantum Channel Guide (NIST ML-KEM / pqpg)</a></li>
+    <li><a href="/keys.html">Server Public Keys &amp; Fingerprints</a></li>
+    <li><a href="/index.gmi">Native Gemini Capsule (gemini://nymserv-ng.virebent.art)</a></li>
   </ul>
 </nav>
 
-<h3>Cos'è un Nymserver?</h3>
+<h3>What is a Nymserver?</h3>
 <p>
-Un <strong>nymserver</strong> (pseudonym server) è un'infrastruttura di posta elettronica che consente di possedere un'identità pseudonima <strong>persistente e bidirezionale</strong>:
+A <strong>nymserver</strong> (pseudonym server) is a cryptographic email relay that provides individuals with a <strong>persistent, bi-directional anonymous identity</strong> on the global Internet:
 </p>
 <ul>
-  <li><strong>Un indirizzo pubblico permanente</strong>: il tuo pseudonimo è del tipo <code>&lt;alias&gt;@nymserv-ng.virebent.art</code>.</li>
-  <li><strong>Invio e ricezione</strong>: puoi inviare email a qualsiasi casella di posta ordinaria (clearnet) in tutto il mondo, e chiunque può risponderti al tuo indirizzo alias.</li>
-  <li><strong>Zero conoscenza dell'identità reale</strong>: a differenza dei comuni servizi di webmail, il nymserver <strong>non sa chi sei, dove ti trovi né da quale indirizzo IP ti colleghi</strong>.</li>
-  <li><strong>Inoltro crittografico a senso unico</strong>: quando riceve una mail per il tuo alias, il nymserver la cifra con la tua chiave pubblica e la instrada attraverso la rete dei remailer (Reply-Block / YAMN) verso la tua reale destinazione, senza che il server conosca la tua identità.</li>
+  <li><strong>Permanent public address</strong>: your pseudonym takes the form <code>&lt;alias&gt;@nymserv-ng.virebent.art</code>.</li>
+  <li><strong>Two-way clearnet bridging</strong>: you can send emails to any standard mailbox worldwide, and any clearnet sender can reply back to your alias.</li>
+  <li><strong>Zero knowledge of physical identity</strong>: unlike commercial email or webmail providers, the nymserver <strong>never knows who you are, where you live, or what your IP address is</strong>.</li>
+  <li><strong>Cryptographic onion routing</strong>: when incoming mail arrives for your alias, the nymserver encrypts the payload with your public key and injects it into the anonymous mix network (YAMN / Reply-Blocks) toward your real mailbox. The server holds only opaque routing tokens, never your true location.</li>
 </ul>
 
 <hr>
 
-<h3>Il nostro servizio: nymserv-ng</h3>
+<h3>The Service: nymserv-ng</h3>
 <p>
-<strong>nymserv-ng</strong> è una nuova implementazione del servizio di pseudonimi sviluppata interamente in <strong>Rust</strong> (ad alta affidabilità, con isolamento della memoria volatile <code>mlock</code> e <code>zeroize</code>), progettata specificamente per la rete anonima di remailer <strong>YAMN</strong>.
+<strong>nymserv-ng</strong> is a next-generation pseudonym engine engineered from the ground up in pure <strong>Rust</strong>. It is built specifically for the <strong>YAMN</strong> (Yet Another Mix Network) anonymous remailer infrastructure, emphasizing strict memory isolation, high concurrency, and defense-in-depth data protection.
 </p>
 <p>
-Il servizio opera in modalità <strong>Dual-Stack</strong> per unire la massima retrocompatibilità storica alle tecnologie crittografiche d'avanguardia:
+The service operates in <strong>Dual-Stack</strong> mode, bridging historical anonymity conventions with modern post-quantum cryptography:
 </p>
 
 <ul>
   <li>
-    <strong>1. Versione Legacy (OpenPGP / GnuPG)</strong>:
-    Garantisce il 100% di compatibilità a livello di bit con lo standard storico <code>crooks/ghionym</code> (<code>nymserver.pl</code>). Se possiedi già script, chiavi PGP e flussi di lavoro con Mixmaster o YAMN, puoi registrarti e operare subito senza alcuna modifica al tuo client.
+    <strong>1. Legacy Channel (OpenPGP / GnuPG)</strong>:
+    Provides exact bit-level compatibility with classic <code>crooks/ghionym</code> (<code>nymserver.pl</code>) standards. Existing remailer scripts, GnuPG setups, and Mixmaster/YAMN clients can create aliases and operate seamlessly with zero client modifications.
     <br>
-    <a href="/legacy.html"><strong>=&gt; Leggi la Guida Completa al Canale Legacy (OpenPGP)</strong></a>
+    <a href="/legacy.html"><strong>=&gt; Read the Full Legacy Channel Guide (OpenPGP)</strong></a>
   </li>
   <li style="margin-top: 1rem;">
-    <strong>2. Versione Moderna (Post-Quantum NG)</strong>:
-    Risolve le vulnerabilità storiche di OpenPGP (assenza di Forward Secrecy, staticità delle chiavi e vulnerabilità agli attacchi quantistici <em>Harvest Now, Decrypt Later</em>). Utilizza il nuovo standard <strong>NIST FIPS 203 ML-KEM-768</strong> combinato con chiavi effimere X25519 e cifratura AEAD ChaCha20-Poly1305.
-    È accompagnata dal client standalone in puro Rust <strong>pqpg</strong> (Post-Quantum Privacy Guard) con supporto QR Code per macchine Air-Gapped.
+    <strong>2. Modern Channel (Post-Quantum NG &amp; pqpg)</strong>:
+    Overcomes the structural risks of legacy OpenPGP (lack of Perfect Forward Secrecy, key staticity, and vulnerability to <em>Harvest Now, Decrypt Later</em> quantum adversaries). Built upon the official <strong>NIST FIPS 203 ML-KEM-768</strong> standard combined with ephemeral X25519 key exchange, AEAD ChaCha20-Poly1305 authenticated encryption, and Ed25519 signatures.
+    Supported by the standalone, pure-Rust CLI client <strong>pqpg</strong> (Post-Quantum Privacy Guard) with terminal QR code capabilities for air-gapped environments.
     <br>
-    <a href="/modern.html"><strong>=&gt; Leggi la Guida Completa al Canale Post-Quantum e pqpg</strong></a>
+    <a href="/postquantum.html"><strong>=&gt; Read the Full Post-Quantum Channel Guide &amp; pqpg Documentation</strong></a>
   </li>
 </ul>
 
 <hr>
 
+<h3>Data Custody &amp; Security Architecture</h3>
+
+<p>
+The foundational threat model of <strong>2 novembre</strong> assumes that the host server may face unauthorized inspection, network eavesdropping, legal compulsion, or physical seizure (cold-boot extraction). Our security architecture is designed so that <strong>seizure reveals nothing useful about our users</strong>:
+</p>
+
+<div class="security-box">
+  <h4>1. Zero-Knowledge Identity Model</h4>
+  <p>
+    The server holds no personal records, phone numbers, payment metadata, or access logs. Pseudonym registration and configuration requests arrive exclusively through multi-hop anonymous remailers. The server has no technical capability to tie an alias to an individual or an origin network node.
+  </p>
+
+  <h4>2. In-Memory Encryption on Ingestion (+cryptrecv)</h4>
+  <p>
+    When clearnet emails arrive at the Local Delivery Agent (<code>nymserv-lda</code>), they are held exclusively in volatile RAM. Before any storage or queue processing occurs, the message body is encrypted with the alias's public key (OpenPGP or ML-KEM/ChaCha20-Poly1305). <strong>No unencrypted user correspondence ever touches persistent disk storage.</strong>
+  </p>
+
+  <h4>3. Volatile Memory Hygiene (mlock &amp; zeroize)</h4>
+  <p>
+    To eliminate page-swapping leaks to NVMe/SSD swap partitions, sensitive memory buffers are pinned in RAM using the Linux kernel <code>mlock</code> syscall. Upon completion of cryptographic transformations, memory regions holding plaintext headers, decrypted commands, or session keys are forcefully overwritten with zeroes using the <code>zeroize</code> compiler-enforced primitive.
+  </p>
+
+  <h4>4. Forward Secrecy &amp; Quantum Harvest Resistance</h4>
+  <p>
+    In the modern channel, every transmission utilizes an ephemeral post-quantum key encapsulation mechanism. Even if the server's long-term identity keys were compromised or seized in the future, past captured traffic cannot be retroactively decrypted (immune to <em>Harvest Now, Decrypt Later</em> state surveillance).
+  </p>
+
+  <h4>5. Opaque Onion Reply-Blocks (SURB)</h4>
+  <p>
+    The delivery addresses stored in the database are not email addresses, but pre-encrypted multi-hop reply blocks. The first layer is encrypted with the public key of the initial YAMN mix node. The nymserver is cryptographically blind to the number of intermediate hops and the final recipient address.
+  </p>
+
+  <h4>6. Embedded ACID Engine &amp; Attack Surface Elimination</h4>
+  <p>
+    <code>nymserv-ng</code> does not run external SQL databases (no MySQL, MariaDB, or PostgreSQL). Storage is handled in-process by <strong>redb</strong>, a crash-safe, embedded ACID key-value store in pure Rust. There are zero listening network ports, eliminating remote database exploitation vectors.
+  </p>
+
+  <h4>7. Zero Web Telemetry &amp; Hardened Minimal Delivery</h4>
+  <p>
+    The web presence is strictly plain text and lightweight HTML. Nginx operates with <code>access_log off</code> (zero visitor IP logging), no cookies, no tracking scripts, and a strict Content Security Policy (<code>default-src 'none'</code>). The site functions natively in Lynx, w3m, Tor Browser, and over the Gemini protocol.
+  </p>
+</div>
+
+<hr>
+
 <div class="footer">
-  <p>Discussione &amp; Comunità: unisciti a noi sui newsgroup Usenet <strong>alt.privacy.anon-server</strong> e <strong>alt.cypherpunks</strong>.<br>
-  Maintainer: <strong>Gabx</strong> &bull; Codice sorgente: <a href="https://github.com/gabrix73/nymserv-ng">github.com/gabrix73/nymserv-ng</a> &bull; AGPL-3.0</p>
+  <p>Discussion &amp; Community: join us on Usenet newsgroups <strong>alt.privacy.anon-server</strong> and <strong>alt.cypherpunks</strong>.<br>
+  Maintainer: <strong>Gabx</strong> &bull; Source code: <a href="https://github.com/gabrix73/nymserv-ng">github.com/gabrix73/nymserv-ng</a> &bull; AGPL-3.0</p>
 </div>
 
 </body>

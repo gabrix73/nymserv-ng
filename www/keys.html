@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chiavi Pubbliche &bull; 2 novembre</title>
+<title>Server Public Keys &bull; 2 novembre</title>
 <style>
   body {
     background: #141414;
@@ -20,6 +20,16 @@
   h3 { font-size: 1.1rem; color: #f0f0f0; margin-top: 2rem; border-bottom: 1px solid #333; padding-bottom: 0.3rem; }
   a { color: #72a9ff; text-decoration: none; }
   a:hover { text-decoration: underline; }
+  .lang-bar {
+    text-align: right;
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #262626;
+  }
+  .lang-bar a { margin-left: 0.4rem; padding: 0.1rem 0.3rem; }
+  .lang-bar .current-lang { color: #ffffff; font-weight: bold; background: #262626; border-radius: 3px; }
   .menu {
     background: #1a1a1a;
     border: 1px solid #333;
@@ -31,14 +41,6 @@
   .menu li { margin: 0.35rem 0; }
   .menu li::before { content: "=> "; color: #888; font-weight: bold; }
   .active-nav { color: #ffffff; font-weight: bold; }
-  pre {
-    background: #1e1e1e;
-    border: 1px solid #333;
-    padding: 0.8rem;
-    overflow-x: auto;
-    font-size: 0.9rem;
-    border-radius: 4px;
-  }
   code { background: #222; padding: 0.1rem 0.3rem; border-radius: 3px; }
   ul { padding-left: 1.4rem; }
   li { margin-bottom: 0.35rem; }
@@ -48,57 +50,61 @@
 </head>
 <body>
 
-<h1>2 novembre</h1>
-<h2>Chiavi Pubbliche Ufficiali del Server &bull; nymserv-ng</h2>
+<div class="lang-bar" aria-label="Language selection">
+  Language: <span class="current-lang">EN (English)</span> | <a href="/it/keys.html">IT (Italiano)</a> | <a href="/fr/keys.html">FR (Français)</a>
+</div>
 
-<nav class="menu" aria-label="Navigazione Principale">
+<h1>2 novembre</h1>
+<h2>Official Server Public Keys &bull; nymserv-ng</h2>
+
+<nav class="menu" aria-label="Main Navigation">
   <ul>
-    <li><a href="/">Home (Introduzione e Panoramica)</a></li>
-    <li><a href="/legacy.html">Guida Canale Legacy (OpenPGP / GnuPG / Ghionym)</a></li>
-    <li><a href="/modern.html">Guida Canale Moderno (Post-Quantum / ML-KEM / pqpg)</a></li>
-    <li><a href="/keys.html" class="active-nav">Chiavi Pubbliche del Server &amp; Fingerprint</a></li>
-    <li><a href="/keys.gmi">Versione Gemtext (/keys.gmi)</a></li>
+    <li><a href="/index.html">Home (Overview &amp; Security Architecture)</a></li>
+    <li><a href="/legacy.html">Legacy Channel Guide (OpenPGP / GnuPG / Ghionym)</a></li>
+    <li><a href="/postquantum.html">Post-Quantum Channel Guide (NIST ML-KEM / pqpg)</a></li>
+    <li><a href="/keys.html" class="active-nav">Server Public Keys &amp; Fingerprints</a></li>
+    <li><a href="/keys.gmi">Gemtext Version (/keys.gmi)</a></li>
   </ul>
 </nav>
 
 <p>
-Verifica sempre i fingerprint e gli hash crittografici prima di cifrare qualsiasi messaggio o richiesta di registrazione diretta a nymserv-ng.
+Always verify fingerprints and cryptographic hashes before submitting configuration requests or sending encrypted transmissions to nymserv-ng.
 </p>
 
 <hr>
 
-<h3>1. Chiave Master OpenPGP (Canale Legacy)</h3>
+<h3>1. Master OpenPGP Key (Legacy Channel)</h3>
 <p>
-Utilizzata per cifrare le richieste <code>Config:</code> e <code>send:</code> nel protocollo storico GnuPG / Ghionym.
+Used to encrypt <code>Config:</code> requests and outbound <code>send:</code> dispatches under the historical GnuPG / Ghionym protocol.
 </p>
 <p>
 <a href="/nymserver-openpgp.asc"><strong>=&gt; Download: nymserver-openpgp.asc</strong></a>
 </p>
 
-<p>Fingerprint OpenPGP:<br>
+<p>OpenPGP Fingerprint:<br>
 <code>C5D1 1FC6 DD91 5E45 CE82  4B6E D455 E394 E202 E5CC</code></p>
 <p>Long Key ID:<br>
 <code>D455E394E202E5CC</code></p>
-<p>Algoritmo: RSA 4096-bit<br>
+<p>Algorithm: RSA 4096-bit<br>
 User ID: <code>nymserv-ng pseudonym server &lt;config@nymserv-ng.virebent.art&gt;</code></p>
 
 <hr>
 
-<h3>2. Chiave Master Post-Quantum (Canale Moderno)</h3>
+<h3>2. Master Post-Quantum Key (Modern Channel)</h3>
 <p>
-Utilizzata per l'incapsulamento crittografico KEM resistente all'analisi quantistica (Harvest Now, Decrypt Later immune).
+Used for post-quantum key encapsulation mechanism (KEM), immune to quantum computer cryptanalysis (Harvest Now, Decrypt Later resistant).
 </p>
 <p>
-<a href="/nymserver-pq-pubkey.bin"><strong>=&gt; Download: nymserver-pq-pubkey.bin (1184 byte)</strong></a>
+<a href="/nymserver-pq-pubkey.bin"><strong>=&gt; Download: nymserver-pq-pubkey.bin (1184 bytes)</strong></a>
 </p>
 
-<p>SHA256 Hash della Chiave Pubblica:<br>
+<p>SHA256 Public Key Hash:<br>
 <code>12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4</code></p>
-<p>Algoritmo: NIST FIPS 203 ML-KEM-768</p>
+<p>Algorithm: NIST FIPS 203 ML-KEM-768</p>
 
 <div class="footer">
-  <p>Discussione &amp; Comunità: unisciti a noi sui newsgroup Usenet <strong>alt.privacy.anon-server</strong> e <strong>alt.cypherpunks</strong>.<br>
-  Maintainer: <strong>Gabx</strong> &bull; Codice sorgente: <a href="https://github.com/gabrix73/nymserv-ng">github.com/gabrix73/nymserv-ng</a> &bull; AGPL-3.0</p>
+  <p>Discussion &amp; Community: join us on Usenet newsgroups <strong>alt.privacy.anon-server</strong> and <strong>alt.cypherpunks</strong>.<br>
+  Maintainer: <strong>Gabx</strong> &bull; Source code: <a href="https://github.com/gabrix73/nymserv-ng">github.com/gabrix73/nymserv-ng</a> &bull; AGPL-3.0</p>
 </div>
 
 </body>

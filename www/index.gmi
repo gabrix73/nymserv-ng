@@ -1,45 +1,61 @@
 # 2 novembre
-## nymserv-ng • Pseudonym Server per la Rete YAMN
+## nymserv-ng • Pseudonym Server for the YAMN Mix Network
 
-=> / Home (Introduzione e Panoramica)
-=> /legacy.gmi Guida Canale Legacy (OpenPGP / GnuPG / Ghionym)
-=> /modern.gmi Guida Canale Moderno (Post-Quantum / ML-KEM / pqpg)
-=> /keys.gmi Chiavi Pubbliche del Server & Fingerprint
+Language: EN (English) | => /it/index.gmi IT (Italiano) | => /fr/index.gmi FR (Français)
 
----
-
-### Cos'è un Nymserver?
-
-Un nymserver (pseudonym server) è un'infrastruttura di posta elettronica che consente di possedere un'identità pseudonima persistente e bidirezionale:
-
-* Un indirizzo pubblico permanente: il tuo pseudonimo è del tipo <alias>@nymserv-ng.virebent.art.
-* Invio e ricezione: puoi inviare email a qualsiasi casella di posta ordinaria (clearnet) in tutto il mondo, e chiunque può risponderti al tuo indirizzo alias.
-* Zero conoscenza dell'identità reale: a differenza dei comuni servizi di webmail, il nymserver non sa chi sei, dove ti trovi né da quale indirizzo IP ti colleghi.
-* Inoltro crittografico a senso unico: quando riceve una mail per il tuo alias, il nymserver la cifra con la tua chiave pubblica e la instrada attraverso la rete dei remailer (Reply-Block / YAMN) verso la tua reale destinazione, senza che il server conosca la tua identità.
+=> /index.gmi Home (Overview & Security Architecture)
+=> /legacy.gmi Legacy Channel Guide (OpenPGP / GnuPG / Ghionym)
+=> /postquantum.gmi Post-Quantum Channel Guide (NIST ML-KEM / pqpg)
+=> /keys.gmi Server Public Keys & Fingerprints
 
 ---
 
-### Il nostro servizio: nymserv-ng
+### What is a Nymserver?
 
-nymserv-ng è una nuova implementazione del servizio di pseudonimi sviluppata interamente in Rust (ad alta affidabilità, con isolamento della memoria volatile mlock e zeroize), progettata specificamente per la rete anonima di remailer YAMN.
+A nymserver (pseudonym server) is a cryptographic email relay that provides individuals with a persistent, bi-directional anonymous identity on the global Internet:
 
-Il servizio opera in modalità Dual-Stack per unire la massima retrocompatibilità storica alle tecnologie crittografiche d'avanguardia:
-
-#### 1. Versione Legacy (OpenPGP / GnuPG)
-Garantisce il 100% di compatibilità a livello di bit con lo standard storico crooks/ghionym (nymserver.pl). Se possiedi già script, chiavi PGP e flussi di lavoro con Mixmaster o YAMN, puoi registrarti e operare subito senza alcuna modifica al tuo client.
-=> /legacy.gmi Leggi la Guida Completa al Canale Legacy (OpenPGP)
-
-#### 2. Versione Moderna (Post-Quantum NG)
-Risolve le vulnerabilità storiche di OpenPGP (assenza di Forward Secrecy, staticità delle chiavi e vulnerabilità agli attacchi quantistici Harvest Now, Decrypt Later). Utilizza il nuovo standard NIST FIPS 203 ML-KEM-768 combinato con chiavi effimere X25519 e cifratura AEAD ChaCha20-Poly1305.
-È accompagnata dal client standalone in puro Rust pqpg (Post-Quantum Privacy Guard) con supporto QR Code per macchine Air-Gapped.
-=> /modern.gmi Leggi la Guida Completa al Canale Post-Quantum e pqpg
+* Permanent public address: your pseudonym takes the form <alias>@nymserv-ng.virebent.art.
+* Two-way clearnet bridging: you can send emails to any standard mailbox worldwide, and any clearnet sender can reply back to your alias.
+* Zero knowledge of physical identity: unlike commercial email or webmail providers, the nymserver never knows who you are, where you live, or what your IP address is.
+* Cryptographic onion routing: when incoming mail arrives for your alias, the nymserver encrypts the payload with your public key and injects it into the anonymous mix network (YAMN / Reply-Blocks) toward your real mailbox. The server holds only opaque routing tokens, never your true location.
 
 ---
 
-### Discussione & Comunità
-Unisciti alla discussione sui newsgroup Usenet:
+### The Service: nymserv-ng
+
+nymserv-ng is a next-generation pseudonym engine engineered from the ground up in pure Rust. It is built specifically for the YAMN (Yet Another Mix Network) anonymous remailer infrastructure, emphasizing strict memory isolation, high concurrency, and defense-in-depth data protection.
+
+The service operates in Dual-Stack mode:
+
+#### 1. Legacy Channel (OpenPGP / GnuPG)
+Provides exact bit-level compatibility with classic crooks/ghionym (nymserver.pl) standards. Existing remailer scripts, GnuPG setups, and Mixmaster/YAMN clients can create aliases and operate seamlessly with zero client modifications.
+=> /legacy.gmi Read the Full Legacy Channel Guide (OpenPGP)
+
+#### 2. Post-Quantum Channel (NG & pqpg)
+Overcomes the structural risks of legacy OpenPGP (lack of Perfect Forward Secrecy, key staticity, and vulnerability to Harvest Now, Decrypt Later quantum adversaries). Built upon the official NIST FIPS 203 ML-KEM-768 standard combined with ephemeral X25519 key exchange, AEAD ChaCha20-Poly1305 authenticated encryption, and Ed25519 signatures.
+Supported by the standalone, pure-Rust CLI client pqpg (Post-Quantum Privacy Guard) with terminal QR code capabilities for air-gapped environments.
+=> /postquantum.gmi Read the Full Post-Quantum Channel Guide & pqpg Documentation
+
+---
+
+### Data Custody & Security Architecture
+
+The foundational threat model assumes that the host server may face unauthorized inspection, network eavesdropping, legal compulsion, or physical seizure (cold-boot extraction):
+
+* Zero-Knowledge Identity Model: No logs, no IP addresses, no user telemetry. Aliases are registered and configured strictly via multi-hop remailers.
+* In-Memory Encryption on Ingestion (+cryptrecv): All incoming messages are encrypted in volatile RAM before touching persistent disk. No cleartext user correspondence is ever stored.
+* Volatile Memory Hygiene (mlock & zeroize): Sensitive memory buffers are pinned in RAM using Linux mlock syscall to prevent NVMe/SSD swap leaks, and wiped with zeroize on drop.
+* Forward Secrecy & Quantum Harvest Resistance: Ephemeral post-quantum key encapsulation (ML-KEM-768 + X25519) guarantees that future machine seizure cannot retroactively decrypt recorded traffic.
+* Opaque Onion Reply-Blocks (SURB): Return paths are encrypted for the first YAMN remailer; the nymserver is cryptographically blind to intermediate hops and final recipients.
+* Embedded ACID Engine: Powered in-process by redb in pure Rust. Zero listening database network sockets (no MySQL, MariaDB, or PostgreSQL).
+* Zero Web Telemetry: Nginx configured with access_log off, strict Content Security Policy default-src 'none', zero tracking scripts or cookies.
+
+---
+
+### Discussion & Community
+Join the discussion on Usenet newsgroups:
 => news:alt.privacy.anon-server alt.privacy.anon-server
 => news:alt.cypherpunks alt.cypherpunks
 
 Maintainer: Gabx
-=> https://github.com/gabrix73/nymserv-ng Codice sorgente (AGPL-3.0)
+=> https://github.com/gabrix73/nymserv-ng Source code (AGPL-3.0)

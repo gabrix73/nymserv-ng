@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post-Quantum Channel (NIST ML-KEM & pqpg) &bull; 2 novembre</title>
+<style>
+  body {
+    background: #141414;
+    color: #e2e2e2;
+    font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+    font-size: 15px;
+    line-height: 1.55;
+    margin: 2rem auto;
+    max-width: 75ch;
+    padding: 0 1rem;
+  }
+  h1 { font-size: 1.35rem; margin-bottom: 0.2rem; color: #ffffff; }
+  h2 { font-size: 1.05rem; font-weight: normal; color: #a0a0a0; margin-top: 0; }
+  h3 { font-size: 1.1rem; color: #f0f0f0; margin-top: 2rem; border-bottom: 1px solid #333; padding-bottom: 0.3rem; }
+  h4 { font-size: 0.95rem; color: #cfcfcf; margin-bottom: 0.3rem; }
+  a { color: #72a9ff; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .lang-bar {
+    text-align: right;
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #262626;
+  }
+  .lang-bar a { margin-left: 0.4rem; padding: 0.1rem 0.3rem; }
+  .lang-bar .current-lang { color: #ffffff; font-weight: bold; background: #262626; border-radius: 3px; }
+  .menu {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    padding: 0.8rem 1rem;
+    border-radius: 4px;
+    margin: 1.5rem 0;
+  }
+  .menu ul { list-style: none; padding-left: 0; margin: 0; }
+  .menu li { margin: 0.35rem 0; }
+  .menu li::before { content: "=> "; color: #888; font-weight: bold; }
+  .active-nav { color: #ffffff; font-weight: bold; }
+  pre {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    padding: 0.8rem;
+    overflow-x: auto;
+    font-size: 0.9rem;
+    border-radius: 4px;
+  }
+  code { background: #222; padding: 0.1rem 0.3rem; border-radius: 3px; }
+  ul { padding-left: 1.4rem; }
+  li { margin-bottom: 0.35rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+  th, td { border: 1px solid #333; padding: 0.5rem 0.7rem; text-align: left; }
+  th { background: #222; color: #fff; }
+  hr { border: 0; border-top: 1px solid #333; margin: 2rem 0; }
+  .footer { color: #888; font-size: 0.85rem; margin-top: 3rem; border-top: 1px solid #2a2a2a; padding-top: 1rem; }
+</style>
+</head>
+<body>
+
+<div class="lang-bar" aria-label="Language selection">
+  Language: <span class="current-lang">EN (English)</span> | <a href="/it/postquantum.html">IT (Italiano)</a> | <a href="/fr/postquantum.html">FR (Français)</a>
+</div>
+
+<h1>2 novembre</h1>
+<h2>Post-Quantum Protocol Guide &bull; NIST ML-KEM &amp; pqpg</h2>
+
+<nav class="menu" aria-label="Main Navigation">
+  <ul>
+    <li><a href="/index.html">Home (Overview &amp; Security Architecture)</a></li>
+    <li><a href="/legacy.html">Legacy Channel Guide (OpenPGP / GnuPG / Ghionym)</a></li>
+    <li><a href="/postquantum.html" class="active-nav">Post-Quantum Channel Guide (NIST ML-KEM / pqpg)</a></li>
+    <li><a href="/keys.html">Server Public Keys &amp; Fingerprints</a></li>
+    <li><a href="/postquantum.gmi">Gemtext Version (/postquantum.gmi)</a></li>
+  </ul>
+</nav>
+
+<h3>Why Migrate to the Post-Quantum Channel?</h3>
+<p>
+While legacy OpenPGP remains fully supported for historical continuity, it presents architectural limitations that are no longer adequate for high-risk threat models:
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Capability</th>
+      <th>Legacy OpenPGP</th>
+      <th>Post-Quantum Channel (NG)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Quantum Resistance</strong></td>
+      <td>Vulnerable to Shor's algorithm (RSA / ECC)</td>
+      <td><strong>Immune</strong> (NIST FIPS 203 ML-KEM-768)</td>
+    </tr>
+    <tr>
+      <td><strong>Forward Secrecy (PFS)</strong></td>
+      <td>None (static keys: seizure compromises all past traffic)</td>
+      <td><strong>Perfect</strong> (ephemeral X25519 per message session)</td>
+    </tr>
+    <tr>
+      <td><strong>Ciphertext Integrity</strong></td>
+      <td>Optional signatures / malleable packets</td>
+      <td><strong>Authenticated AEAD</strong> (ChaCha20-Poly1305)</td>
+    </tr>
+    <tr>
+      <td><strong>Software Stack</strong></td>
+      <td>Heavy GnuPG, dirmngr/agent daemons, C libraries</td>
+      <td><strong>pqpg: standalone pure-Rust binary (1.2 MB)</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Air-Gapped Operation</strong></td>
+      <td>Cumbersome (file transfer or USB drives)</td>
+      <td><strong>Native terminal QR Code projection</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h3>The Client: pqpg (Post-Quantum Privacy Guard)</h3>
+<p>
+To enable instant adoption of post-quantum cryptography without wrestling with complex toolchains, we provide <strong>pqpg</strong>, a standalone command-line cryptographic tool <strong>written entirely in pure Rust</strong> (memory-safe, zero buffer overflows, memory secured with <code>mlock</code> and <code>zeroize</code>).
+</p>
+
+<h4>Direct Binary Download (Linux x86_64 Standalone, 1.2 MB)</h4>
+<pre>curl -sSL https://nymserv-ng.virebent.art/bin/pqpg-linux-amd64 -o ~/bin/pqpg
+chmod +x ~/bin/pqpg</pre>
+<p>SHA256: <code>fc1eabc6ec800b494545f558f520ec3493741977664d960cb2e7be75ea46e415</code></p>
+
+<h4>macOS and Windows Binaries</h4>
+<p>
+Precompiled releases for macOS (Apple Silicon M1-M4 &amp; Intel) and Windows (<code>pqpg-windows-amd64.exe</code>) are hosted on:<br>
+<a href="https://github.com/gabrix73/pqpg/releases"><strong>=&gt; GitHub Releases: github.com/gabrix73/pqpg/releases</strong></a>
+</p>
+
+<hr>
+
+<h3>Step-by-Step pqpg Quickstart</h3>
+
+<h4>1. Generate Your Keypair</h4>
+<pre>pqpg keygen -n mynym --qr</pre>
+<p>
+Generates your private key <code>mynym.key</code> (saved with <code>0600</code> permissions) and public key <code>mynym.pub</code>.
+The <code>--qr</code> flag displays a high-density QR Code in your terminal, allowing an air-gapped camera or smartphone to ingest the public key without any network attachment.
+</p>
+
+<h4>2. Encrypt a Message for a Recipient</h4>
+<pre>pqpg encrypt -r recipient.pub message.txt -o message.msg</pre>
+<p>Or pipe directly from standard input with QR display:</p>
+<pre>echo "Classified brief" | pqpg encrypt -r recipient.pub --qr</pre>
+
+<h4>3. Decrypt Received Mail</h4>
+<pre>pqpg decrypt -s mynym.key message.msg</pre>
+
+<h4>4. Digital Signatures and Verification (Ed25519)</h4>
+<pre># Sign a document (outputs a 64-byte detached signature)
+pqpg sign -s mynym.key document.pdf -o document.sig
+
+# Verify signature against author's public key
+pqpg verify -k author.pub -s document.sig document.pdf</pre>
+
+<h4>5. Air-Gapped Terminal QR Projection</h4>
+<pre>pqpg qr any_file.txt</pre>
+
+<hr>
+
+<h3>Server Post-Quantum Public Key</h3>
+<p>
+To encapsulate alias registration requests or direct communications for nymserv-ng, download the server's official ML-KEM-768 public key:
+<br>
+<a href="/nymserver-pq-pubkey.bin"><strong>=&gt; Download nymserver-pq-pubkey.bin (Post-Quantum Channel, 1184 bytes)</strong></a>
+</p>
+<p>
+SHA256 Public Key:<br>
+<code>12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4</code>
+</p>
+
+<div class="footer">
+  <p>Discussion &amp; Community: join us on Usenet newsgroups <strong>alt.privacy.anon-server</strong> and <strong>alt.cypherpunks</strong>.<br>
+  Maintainer: <strong>Gabx</strong> &bull; Source code: <a href="https://github.com/gabrix73/nymserv-ng">github.com/gabrix73/nymserv-ng</a> &bull; AGPL-3.0</p>
+</div>
+
+</body>
+</html>

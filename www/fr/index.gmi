@@ -1,0 +1,61 @@
+# 2 novembre
+## nymserv-ng • Serveur de Pseudonymes pour le Réseau YAMN
+
+Langue : => /index.gmi EN (English) | => /it/index.gmi IT (Italiano) | FR (Français)
+
+=> /fr/index.gmi Accueil (Présentation & Sécurité)
+=> /fr/legacy.gmi Guide Canal Historique (OpenPGP / GnuPG / Ghionym)
+=> /fr/postquantum.gmi Guide Canal Post-Quantique (NIST ML-KEM / pqpg)
+=> /fr/keys.gmi Clés Publiques du Serveur & Empreintes
+
+---
+
+### Qu'est-ce qu'un Nymserver ?
+
+Un nymserver (serveur de pseudonymes) est un relais cryptographique de messagerie offrant une identité pseudonyme persistante et bidirectionnelle :
+
+* Adresse publique permanente : votre pseudonyme est de la forme <alias>@nymserv-ng.virebent.art.
+* Passerelle bidirectionnelle clearnet : écrivez à n'importe quel correspondant, et recevez leurs réponses directement sur votre alias.
+* Zéro connaissance de l'identité réelle : le serveur ne connaît ni votre nom, ni votre domicile, ni votre adresse IP.
+* Routage en oignon : à réception, le serveur chiffre le message avec votre clé publique et l'injecte dans le mixnet (YAMN / Reply-Blocks) vers votre boîte réelle, sans connaître votre destination finale.
+
+---
+
+### Le Service : nymserv-ng
+
+nymserv-ng est un moteur de pseudonymes écrit intégralement en Rust pur (sécurité mémoire, verrouillage mlock et nettoyage zeroize), conçu spécifiquement pour le réseau de remailers anonymes YAMN.
+
+Le service fonctionne en mode Dual-Stack :
+
+#### 1. Canal Historique (OpenPGP / GnuPG)
+Compatibilité binaire totale avec crooks/ghionym (nymserver.pl). Vos scripts, clés GnuPG et clients YAMN/Mixmaster fonctionnent sans modification.
+=> /fr/legacy.gmi Consulter le Guide du Canal Historique (OpenPGP)
+
+#### 2. Canal Post-Quantique (NG & pqpg)
+Immunité contre les ordinateurs quantiques (NIST FIPS 203 ML-KEM-768), clés éphémères X25519 (Forward Secrecy parfaite), chiffrement AEAD ChaCha20-Poly1305.
+Accompagné du client autonome en Rust pur pqpg (Post-Quantum Privacy Guard) avec affichage QR Code dans le terminal pour machines isolées (air-gap).
+=> /fr/postquantum.gmi Consulter le Guide du Canal Post-Quantique et pqpg
+
+---
+
+### Garde des Données & Architecture de Sécurité
+
+Le modèle de sécurité est conçu pour résister à une saisie matérielle (cold-boot) ou à une surveillance de masse du réseau :
+
+* Zéro Connaissance : Aucun journal d'accès, adresse IP ou donnée personnelle. Inscriptions via remailers multi-sauts.
+* Chiffrement en Mémoire Immédiat (+cryptrecv) : Dès l'arrivée, les messages sont chiffrés en RAM avant toute écriture disque. Aucun texte clair n'est stocké.
+* Hygiène de la Mémoire (mlock & zeroize) : Verrouillage mémoire RAM par mlock pour interdire le swap SSD, effacement zeroize des données sensibles en fin de traitement.
+* Confidentialité Persistante (PFS) : Clés d'encapsulation éphémères ; la saisie future du serveur ne compromet aucun trafic historique (anti Harvest Now, Decrypt Later).
+* Blocs de Réponse Opaques (SURB) : Les jetons de routage sont chiffrés pour le premier remailer du mixnet ; le nymserver ignore le nombre de sauts et la destination finale.
+* Moteur Embarqué redb : Aucun service SQL distant (zéro MySQL/Postgres), moteur ACID local en Rust pur sans port réseau ouvert.
+* Zéro Télémétrie : Nginx sans journalisation (access_log off), zéro trace, politique CSP stricte default-src 'none'.
+
+---
+
+### Communauté & Discussions
+Rejoignez les échanges sur les groupes Usenet :
+=> news:alt.privacy.anon-server alt.privacy.anon-server
+=> news:alt.cypherpunks alt.cypherpunks
+
+Mainteneur : Gabx
+=> https://github.com/gabrix73/nymserv-ng Code source (AGPL-3.0)

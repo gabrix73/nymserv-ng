@@ -1,0 +1,82 @@
+# 2 novembre
+## Post-Quantum Protocol Guide • NIST ML-KEM & pqpg
+
+Language: EN (English) | => /it/postquantum.gmi IT (Italiano) | => /fr/postquantum.gmi FR (Français)
+
+=> /index.gmi Home (Overview & Security Architecture)
+=> /legacy.gmi Legacy Channel Guide (OpenPGP / GnuPG / Ghionym)
+=> /postquantum.gmi Post-Quantum Channel Guide (NIST ML-KEM / pqpg)
+=> /keys.gmi Server Public Keys & Fingerprints
+
+---
+
+### Why Migrate to the Post-Quantum Channel?
+
+While legacy OpenPGP remains fully supported for historical continuity, it presents architectural limitations that are no longer adequate for high-risk threat models:
+
+* Quantum Resistance: OpenPGP relies on RSA/ECC vulnerable to Shor's algorithm. The post-quantum channel uses NIST FIPS 203 ML-KEM-768 immune to "Harvest Now, Decrypt Later".
+* Forward Secrecy (PFS): In OpenPGP keys are static; server seizure compromises all past traffic. With ML-KEM-768 + ephemeral X25519, every message session has single-use ephemeral keys.
+* AEAD Integrity: Zero ciphertext malleability via ChaCha20-Poly1305 authenticated encryption.
+* Software Stack: No bloated GnuPG or daemon trees; pqpg is a standalone pure-Rust binary (1.2 MB).
+* Air-Gapped Operation: Native terminal QR Code display for air-gapped computers without network connectivity.
+
+---
+
+### The Client: pqpg (Post-Quantum Privacy Guard)
+
+pqpg is a standalone command-line cryptographic tool written entirely in pure Rust (memory-safe, memory protected with mlock and zeroize).
+
+#### Direct Download (Linux x86_64 Standalone, 1.2 MB)
+=> /bin/pqpg-linux-amd64 Download pqpg-linux-amd64
+=> /bin/pqpg-linux-amd64.sha256 SHA256 Checksum
+
+Quick install command:
+```
+curl -sSL https://nymserv-ng.virebent.art/bin/pqpg-linux-amd64 -o ~/bin/pqpg
+chmod +x ~/bin/pqpg
+```
+
+#### macOS and Windows Binaries
+=> https://github.com/gabrix73/pqpg/releases GitHub Releases for macOS (Apple Silicon/Intel) and Windows (.exe)
+
+---
+
+### Step-by-Step pqpg Quickstart
+
+1. Generate Your Keypair:
+```
+pqpg keygen -n mynym --qr
+```
+Generates mynym.key (0600 permissions) and mynym.pub, projecting a high-density QR Code in the terminal.
+
+2. Encrypt a Message for a Recipient:
+```
+pqpg encrypt -r recipient.pub message.txt -o message.msg
+echo "Classified brief" | pqpg encrypt -r recipient.pub --qr
+```
+
+3. Decrypt Received Mail:
+```
+pqpg decrypt -s mynym.key message.msg
+```
+
+4. Digital Signatures and Verification (Ed25519):
+```
+pqpg sign -s mynym.key document.pdf -o document.sig
+pqpg verify -k author.pub -s document.sig document.pdf
+```
+
+5. Air-Gapped Terminal QR Projection:
+```
+pqpg qr any_file.txt
+```
+
+---
+
+### Server Post-Quantum Public Key
+
+Download the official server ML-KEM-768 public key:
+=> /nymserver-pq-pubkey.bin Download nymserver-pq-pubkey.bin (1184 bytes)
+
+SHA256:
+12872e8ea4ffdab9899a08512a934cd43de78a720b7fc19404909d79ecbb68d4
