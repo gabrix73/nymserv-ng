@@ -149,7 +149,7 @@ pub fn parse_config_message(content: &str, hostname: &str) -> Result<ConfigReque
             if let Some(ref mut key_buf) = pubkey {
                 key_buf.push_str(line);
                 key_buf.push('\n');
-                if line.contains("-----END PGP PUBLIC KEY BLOCK-----") {
+                if line.contains("-----END PGP PUBLIC KEY BLOCK-----") || line.contains("-----END PQPG PUBLIC KEY-----") {
                     in_pubkey = false;
                 }
             }
@@ -207,7 +207,7 @@ pub fn parse_config_message(content: &str, hostname: &str) -> Result<ConfigReque
             if !rest.is_empty() {
                 key_buf.push_str(rest);
                 key_buf.push('\n');
-                if rest.contains("-----END PGP PUBLIC KEY BLOCK-----") {
+                if rest.contains("-----END PGP PUBLIC KEY BLOCK-----") || rest.contains("-----END PQPG PUBLIC KEY-----") {
                     in_pubkey = false;
                 }
             }

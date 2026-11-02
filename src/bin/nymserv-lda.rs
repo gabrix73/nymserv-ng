@@ -6,6 +6,7 @@ use tracing::{error, info, warn};
 
 use nymserv_ng::config::Config;
 use nymserv_ng::crypto::openpgp::{decrypt_message, encrypt_message};
+use nymserv_ng::crypto::pqpg;
 use nymserv_ng::mta::send_email;
 use nymserv_ng::protocol::ghio::{parse_config_message, validate_alias, AccountFlags};
 use nymserv_ng::store::{NymRecord, NymStore, StoreError};
@@ -171,6 +172,17 @@ fn extract_pgp_message(input: &[u8]) -> Option<&[u8]> {
     let end_idx = start_idx + end_offset + end_tag.len();
 
     Some(&input[start_idx..end_idx])
+}
+
+fn extract_pqpg_message(input: &[u8]) -> Option<&str> {
+    let text = std::str::from_utf8(input).ok()?;
+    let start = text.find("-----BEGIN PQPG MESSAGE-----")?;
+    let end = text.find("-----END PQPG MESSAGE-----")?;
+    if end > start {
+        Some(&text[start..end + "-----END PQPG MESSAGE-----".len()])
+    } else {
+        None
+    }
 }
 
 fn extract_header_value(raw: &[u8], target_header: &str) -> Option<String> {
@@ -384,12 +396,29 @@ fn handle_alias_inbound(
 
     // Encrypt body if FL_CRYPTRECV is set (or if public key is present)
     let final_body = if let Some(ref pubkey) = record.public_key_armor {
-        info!("encrypting inbound message for alias '{}' (key present)...", record.alias);
-        match encrypt_message(pubkey, body.as_bytes()) {
-            Ok(encrypted_armor) => encrypted_armor,
-            Err(e) => {
-                warn!("PGP encryption failed ({}), falling back to cleartext body", e);
-                body
+        if pubkey.contains("BEGIN PQPG PUBLIC KEY") {
+            info!("encrypting inbound message for alias '{}' with Post-Quantum PQPG key...", record.alias);
+            match pqpg::PublicKey::from_armored(pubkey) {
+                Ok(pk) => match pqpg::encrypt_message(&pk, body.as_bytes()) {
+                    Ok(ciphertext) => pqpg::encode_armored("MESSAGE", &ciphertext),
+                    Err(e) => {
+                        warn!("PQPG encryption failed ({}), falling back to cleartext body", e);
+                        body
+                    }
+                },
+                Err(e) => {
+                    warn!("failed to parse alias PQPG public key ({}): falling back to cleartext", e);
+                    body
+                }
+            }
+        } else {
+            info!("encrypting inbound message for alias '{}' (OpenPGP key present)...", record.alias);
+            match encrypt_message(pubkey, body.as_bytes()) {
+                Ok(encrypted_armor) => encrypted_armor,
+                Err(e) => {
+                    warn!("PGP encryption failed ({}), falling back to cleartext body", e);
+                    body
+                }
             }
         }
     } else {
@@ -452,6 +481,18 @@ fn handle_send_message(
         let secret_armor = fs::read_to_string(&secret_key_path)?;
         decrypt_message(&secret_armor, pgp_data)
             .map_err(|e| anyhow::anyhow!("PGP decryption error on send request: {}", e))?
+    } else if let Some(pqpg_block) = extract_pqpg_message(raw_bytes) {
+        let pq_sk_path = cfg.keys_dir.join("nymserver-pq.key");
+        if !pq_sk_path.exists() {
+            anyhow::bail!("server Post-Quantum private key not found at {:?}", pq_sk_path);
+        }
+        let sk_armor = fs::read_to_string(&pq_sk_path)?;
+        let sk = pqpg::PrivateKey::from_armored(&sk_armor)
+            .map_err(|e| anyhow::anyhow!("failed to parse server PQ key: {}", e))?;
+        let ciphertext = pqpg::decode_armored(pqpg_block, "MESSAGE")
+            .map_err(|e| anyhow::anyhow!("failed to decode armored PQ send message: {}", e))?;
+        pqpg::decrypt_message(&sk, &ciphertext)
+            .map_err(|e| anyhow::anyhow!("PQPG decryption error on send request: {}", e))?
     } else {
         raw_bytes.to_vec()
     };
@@ -516,8 +557,23 @@ fn handle_config_message(cfg: &Config, store: &NymStore, raw_bytes: &[u8]) -> Re
             .map_err(|e| anyhow::anyhow!("PGP decryption error: {}", e))?;
         String::from_utf8(decrypted_bytes)
             .map_err(|e| anyhow::anyhow!("decrypted payload is not valid UTF-8: {}", e))?
+    } else if let Some(pqpg_block) = extract_pqpg_message(raw_bytes) {
+        info!("found PQPG encrypted block ({} bytes), attempting decryption...", pqpg_block.len());
+        let pq_sk_path = cfg.keys_dir.join("nymserver-pq.key");
+        if !pq_sk_path.exists() {
+            anyhow::bail!("server Post-Quantum private key not found at {:?}", pq_sk_path);
+        }
+        let sk_armor = fs::read_to_string(&pq_sk_path)?;
+        let sk = pqpg::PrivateKey::from_armored(&sk_armor)
+            .map_err(|e| anyhow::anyhow!("failed to parse server PQ key: {}", e))?;
+        let ciphertext = pqpg::decode_armored(pqpg_block, "MESSAGE")
+            .map_err(|e| anyhow::anyhow!("failed to decode armored PQ message: {}", e))?;
+        let decrypted_bytes = pqpg::decrypt_message(&sk, &ciphertext)
+            .map_err(|e| anyhow::anyhow!("PQPG decryption error: {}", e))?;
+        String::from_utf8(decrypted_bytes)
+            .map_err(|e| anyhow::anyhow!("decrypted PQ payload is not valid UTF-8: {}", e))?
     } else {
-        info!("no PGP block detected, checking for plain text Config payload...");
+        info!("no encrypted block detected, checking for plain text Config payload...");
         String::from_utf8_lossy(raw_bytes).to_string()
     };
 

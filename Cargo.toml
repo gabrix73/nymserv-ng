@@ -26,6 +26,8 @@ sequoia-openpgp = { version = "1.22", default-features = false, features = ["cry
 
 # Cryptography - Post-Quantum
 ml-kem = "0.2"
+hkdf = "0.12"
+base64 = "0.22"
 
 # Storage & Engine
 redb = "2.4"
